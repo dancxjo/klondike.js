@@ -93,6 +93,7 @@
 						var cardToMove = oldParent.children[i].children[0].card;
 						oldParent.removeChild(oldParent.children[i]);
 						card.el.parentElement.parentElement.stack.push(cardToMove);
+						i--;
 					}
 				}
 				// Remove the card from its current parent					
