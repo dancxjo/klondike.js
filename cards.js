@@ -57,6 +57,10 @@ Card.prototype.getRankLetter = function() {
 	}
 }
 
+Card.prototype.getColor = function() {
+	return this.suit % 2 ? "black" : "red";
+}
+
 Card.prototype.getRankClass = function() {
 	if (this.rank == "+") {
 		return "big";
@@ -118,9 +122,17 @@ Card.prototype.attach = function(el) {
 			dot.innerHTML = Symbols[this.suit];					
 			dot.setAttribute("class", "spotC5");				
 		}
+		if (this.el.parentElement) {
+			this.el.parentElement.setAttribute("class", (this.el.parentElement.getAttribute("class")+"").replace(/\s*down/g, ""));
+		}
 	}	else {
 		this.el.setAttribute("class", "card down");
+		if (this.el.parentElement) {
+			this.el.parentElement.setAttribute("class", this.el.parentElement.getAttribute("class") + " down");
+		}
 	}
+	
+	this.el.setAttribute("draggable", "true");
 
 	this.el.card = this;
 }
@@ -131,14 +143,13 @@ function Stack() {
 Stack.prototype.attach = function(el) {
 	this.el = el;
 	this.el.setAttribute("class", this.constructor.name.toLowerCase());	
+	el.stack = this;
 }
 
 function pushItem(list, item) {	
 	var li = list.appendChild(document.createElement("li"));
 	li.appendChild(item);
-	if (!item.card.up) {
-		li.setAttribute("class", "down");
-	}
+	if (item.card) { item.card.refresh();	}
 }
 
 function popItem(list) {
@@ -173,6 +184,7 @@ Stack.prototype.top = function () {
 function Deck(el) {
 	this.attach(el);
 	el.setAttribute("class", "deck");
+	el.stack = this;
 	for (var s = Hearts; s <= Clubs; s++) {
 		for (var r = Ace; r <= King; r++) {
 			var card = new Card(r, s); 
@@ -187,6 +199,7 @@ Deck.prototype = new Stack();
 function Pile(el) {
 	this.el = el;
 	el.setAttribute("class", "pile");
+	el.stack = this;
 }
 
 Pile.prototype = new Stack();
@@ -194,6 +207,7 @@ Pile.prototype = new Stack();
 function Foundation(el) {
 	this.el = el;
 	el.setAttribute("class", "foundation");
+	el.stack = this;
 }
 
 Foundation.prototype = new Stack();
@@ -201,6 +215,7 @@ Foundation.prototype = new Stack();
 function PlayingArea(el) {
 	this.el = el;
 	el.setAttribute("class", "table");
+	el.stack = this;
 }
 
 PlayingArea.prototype = new Stack();
