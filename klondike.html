@@ -1,0 +1,107 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" type="text/css" href="cards.css" media="screen" />
+    <script src="cards.js"></script>
+    <style>
+    	.pile {
+    		width: 5em;    		
+    		float: left;
+    	}
+    </style>
+	</head>
+	<body>
+		<div>
+			<div id="top">
+				<ul id="foundation1"></ul>
+				<ul id="foundation2"></ul>
+				<ul id="foundation3"></ul>
+				<ul id="foundation4"></ul>
+				<ul id="playingArea"></ul>
+				<ul id="deck">					
+				</ul>
+			</div>
+			
+			<div id="piles">			
+				<ul id="pile1"></ul>
+				<ul id="pile2"></ul>
+				<ul id="pile3"></ul>
+				<ul id="pile4"></ul>
+				<ul id="pile5"></ul>
+				<ul id="pile6"></ul>
+				<ul id="pile7"></ul>
+			</div>
+		</div>
+				
+		<script>
+			//var testCard = new Card(Ace, Spades, document.getElementById("testCard"));
+			//testCard.flip();
+			
+			
+			var deck = new Deck(document.getElementById("deck"));			
+			
+			var foundations = [
+				new Foundation(document.getElementById("foundation1")),
+				new Foundation(document.getElementById("foundation2")),
+				new Foundation(document.getElementById("foundation3")),
+				new Foundation(document.getElementById("foundation4"))
+			];
+			
+			var playingArea = new PlayingArea(document.getElementById("playingArea"));
+			
+			var piles = [
+				new Pile(document.getElementById("pile1")),
+				new Pile(document.getElementById("pile2")),
+				new Pile(document.getElementById("pile3")),
+				new Pile(document.getElementById("pile4")),
+				new Pile(document.getElementById("pile5")),
+				new Pile(document.getElementById("pile6")),
+				new Pile(document.getElementById("pile7")),
+			];
+			
+			for (var a = 0; a < 7; a++) {
+				for (var b = a; b < 7; b++) {
+					var card = deck.pop();
+					piles[b].push(card);
+					if (a == b) {
+						card.flip();
+					}
+				}
+			}									
+			
+			function draw() {
+				// Clear current playable Card
+				if (playingArea.getLength() > 0) {							
+					playingArea.top().el.onclick = null;
+				}
+				
+				var card = deck.pop();
+				card.flip();				
+				playingArea.push(card);
+				// TODO: Make playingArea top playable
+				card.el.setAttribute("draggable", "true");				
+				card.el.children[0].setAttribute("draggable", "true");				
+				card.el.onclick = null;
+				
+				if (deck.getLength() > 0) {
+					deck.top().el.onclick = function () {
+						draw();
+					}
+				} else {
+					// Move any playing area cards back to deck
+					while (playingArea.getLength() > 0) {
+						var card = playingArea.pop();
+						card.flip();
+						deck.push(card);
+					}
+					if (deck.getLength() > 0) {
+						draw();
+					}
+				}
+			}
+			
+			draw();			
+		</script>
+	</body>
+</html>
