@@ -108,7 +108,7 @@ Card.prototype.attach = function(el) {
 		} else {
 			var img = front.appendChild(document.createElement("img"));
 			img.setAttribute("class", "face");
-			img.setAttribute("src", (this.rank == Jack ? "jack" : this.rank == Queen ? "queen" : "king") + ".gif");			
+			img.setAttribute("src", "http://www.brainjar.com/css/cards/graphics/" + (this.rank == Jack ? "jack" : this.rank == Queen ? "queen" : "king") + ".gif");			
 			img.setAttribute("draggable", "false");
 			
 			var dot = front.appendChild(document.createElement("div"));		
