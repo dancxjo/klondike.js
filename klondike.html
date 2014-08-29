@@ -90,7 +90,7 @@
 						reachedDragger = true;
 					}
 					if (reachedDragger) {
-						var cardToMove = oldParent.children[i].children[0];
+						var cardToMove = oldParent.children[i].children[0].card;
 						oldParent.removeChild(oldParent.children[i]);
 						card.el.parentElement.parentElement.stack.push(cardToMove);
 					}
