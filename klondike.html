@@ -83,9 +83,21 @@
 			function pileDrop(ev, card) {
 				ev.preventDefault();				
 				card.el.style.outline = "none";
+				var oldParent = draggingCard.el.parentElement.parentElement;
+				var reachedDragger = false;
+				for (var i = 0; i < oldParent.children.length; i++) {
+					if (oldParent.children[i] == draggingCard.el.parentElement) {
+						reachedDragger = true;
+					}
+					if (reachedDragger) {
+						var cardToMove = oldParent.children[i].children[0];
+						oldParent.removeChild(oldParent.children[i]);
+						card.el.parentElement.parentElement.stack.push(cardToMove);
+					}
+				}
 				// Remove the card from its current parent					
-				draggingCard.el.parentElement.parentElement.removeChild(draggingCard.el.parentElement);
-				card.el.parentElement.parentElement.stack.push(draggingCard);				
+				//draggingCard.el.parentElement.parentElement.removeChild(draggingCard.el.parentElement);
+				//card.el.parentElement.parentElement.stack.push(draggingCard);				
 			}						
 			
 			var deck = new Deck(document.getElementById("deck"));
