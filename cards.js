@@ -1,221 +1,352 @@
-const Hearts = 0;
-const Spades = 1;
-const Diamonds = 2;
-const Clubs = 3;
-const Joker = 4;
+var dragStack = [];
 
-const Suits = ["hearts", "spades", "diams", "clubs", "joker"];
-const Symbols = ["&hearts;", "&spades;", "&diams;", "&clubs;", "Joker"];
+const RANK_NAMES = ["joker", "ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "jack", "queen", "king"];
+const SUIT_NAMES = ["joker", "spades", "hearts", "diamonds", "clubs"];
+const SUIT_SYMBOLS = ["", "&spades;", "&hearts;", "&diams;", "&clubs;"];
+const RANK_DOTS = [
+	["spotA1", "spotC5"],
+	["ace"],
+	["spotB1",           "spotB5"],
+	["spotB1", "spotB3", "spotB5"],
+	["spotA1",           "spotA5",
+	 "spotC1",           "spotC5"],
+	["spotA1",           "spotA5",
+	           "spotB3",
+	 "spotC1",           "spotC5"],
+	["spotA1", "spotA3", "spotA5",
+	 "spotC1", "spotC3", "spotC5"],
+	["spotA1", "spotA3", "spotA5",
+	     "spotB2",
+	 "spotC1", "spotC3", "spotC5"],
+	["spotA1", "spotA3", "spotA5",
+	     "spotB2",    "spotB4",
+	 "spotC1", "spotC3", "spotC5"],
+	["spotA1",           "spotA5",
+	     "spotA2",    "spotA4",	
+	            "spotB3",
+		 "spotC2",    "spotC4",	
+	 "spotC1",           "spotC5"],
+	["spotA1",           "spotA5",
+	     "spotA2",    "spotA4",	
+	     "spotB2",    "spotB4",
+		 "spotC2",    "spotC4",	
+	 "spotC1",           "spotC5"],
+	["spotA1", "spotC5"],
+	["spotA1", "spotC5"],
+	["spotA1", "spotC5"]
+];
 
-const Ace = 1;
-const Jack = 11;
-const Queen = 12;
-const King = 13;
-
-function Card(rank, suit, el) {
-	if (suit === undefined) {
-		suit = Joker;
-		rank = "+"
-	} else {	
-		if (isNaN(rank) || rank < Ace || rank > King) {
-			throw new RangeError("A card must have a value of Ace, 2, 3, 4, 5, 6, 7, 8, 9, 10, Jack, Queen or King");
-		}
-		
-		if (isNaN(suit) || suit < Hearts || suit > Clubs) {
-			throw new RangeError("A card must have a suit of Hearts, Spades, Diamonds or Clubs");
+function Front(rank, suit) {
+	this.element = document.createElement("div");
+	this.element.className = "front";
+	this.face = this.element.appendChild(document.createElement("img"));
+	this.face.className = "face";
+	
+	this.index1 = {element: this.element.appendChild(document.createElement("div"))};
+	this.index1.element.className = "index";
+	this.index1.rankDiv = this.index1.element.appendChild(document.createElement("div"));
+	this.index1.rankDiv.className = "rank";
+	this.index1.suitDiv = this.index1.element.appendChild(document.createElement("div"));
+	this.index1.suitDiv.className = "suit";
+	
+	this.index2 = {element: this.element.appendChild(document.createElement("div"))};
+	this.index2.element.classList.add("index");
+	this.index2.element.classList.add("reverse");
+	this.index2.rankDiv = this.index2.element.appendChild(document.createElement("div"));
+	this.index2.rankDiv.className = "rank";
+	this.index2.suitDiv = this.index2.element.appendChild(document.createElement("div"));
+	this.index2.suitDiv.className = "suit";
+	
+	this.dots = [];
+	var dot = this.element.appendChild(document.createElement("div"));
+	dot.className = "ace";
+	this.dots.push(dot);
+	for (var c in "ABC") {
+		var cn = "ABC"[c];
+		for (var r = 1; r <= 5; r++) {
+			var dot = this.element.appendChild(document.createElement("div"));
+			dot.className = "spot" + cn + r;
+			this.dots.push(dot);
 		}
 	}
 	
 	this.rank = rank;
 	this.suit = suit;
-	this.up = false;
-	
-	if (!el) {
-		el = document.createElement("div");
-		//el.setAttribute("href", "#");
-	}
-	
-	this.attach(el);	
 }
 
-Card.prototype.refresh = function () {
-	this.attach(this.el);
-}
-
-Card.prototype.flip = function() {
-	this.up = !this.up;
-	this.refresh();
-}
-
-Card.prototype.getRankLetter = function() {
-	switch (this.rank) {		
-		case Ace: return "A";
-		case Jack: return "J";
-		case Queen: return "Q";
-		case King: return "K";
-		default: return this.rank + "";		
-	}
-}
-
-Card.prototype.getColor = function() {
-	return this.suit % 2 ? "black" : "red";
-}
-
-Card.prototype.getRankClass = function() {
-	if (this.rank == "+") {
-		return "big";
-	} else {
-		return "rank-" + this.getRankLetter().toLowerCase();
-	}
-}
-
-Card.prototype.getSuitClass = function() {
-	return Suits[this.suit];	
-}
-
-const dotPatterns = [
-undefined,
-["ace"],
-["spotB1", "spotB5"],
-["spotB1", "spotB3", "spotB5"],
-["spotA1", "spotA5", "spotC1", "spotC5"],
-["spotA1", "spotA5", "spotC1", "spotC5", "spotB3"],
-["spotA1", "spotA5", "spotC1", "spotC5", "spotA3", "spotC3"],
-["spotA1", "spotA5", "spotC1", "spotC5", "spotA3", "spotC3", "spotB2"],
-["spotA1", "spotA5", "spotC1", "spotC5", "spotA3", "spotC3", "spotB2", "spotB4"],
-["spotA1", "spotA2", "spotA4", "spotA5", "spotC1", "spotC2", "spotC4", "spotC5", "spotB3"],
-["spotA1", "spotA2", "spotA4", "spotA5", "spotC1", "spotC2", "spotC4", "spotC5", "spotB2", "spotB4"]
-];
-
-Card.prototype.attach = function(el) {
-	this.el = el;	
-	this.el.setAttribute("class", "card");
-	this.el.innerHTML = "";
-	if (this.up) {
-		var front = this.el.appendChild(document.createElement("div"));
-		front.setAttribute("class", "front " + Suits[this.suit]);
-		
-		var index = front.appendChild(document.createElement("div"));
-		index.setAttribute("class", "index");
-		index.innerHTML = this.getRankLetter() + "<br/>" + Symbols[this.suit];
-		
-		index = front.appendChild(document.createElement("div"));
-		index.setAttribute("class", "flipindex");
-		index.innerHTML = this.getRankLetter() + "<br/>" + Symbols[this.suit];
-				
-		if (this.rank < 11) {
-			for (var d = 0; d < this.rank; d++) {
-				var dot = front.appendChild(document.createElement("div"));		
-				dot.innerHTML = Symbols[this.suit];		
-				dot.setAttribute("class", dotPatterns[this.rank][d]);				
-			}
+Object.defineProperty(Front.prototype, 'rank', {
+	get: function () { return this._rank; },
+    set: function(value) {
+		this._rank = value;
+		if (this.rank > 0 && this.rank < 11) {
+			this.face.style.visibility = "hidden";
 		} else {
-			var img = front.appendChild(document.createElement("img"));
-			img.setAttribute("class", "face");
-			img.setAttribute("src", "http://www.brainjar.com/css/cards/graphics/" + (this.rank == Jack ? "jack" : this.rank == Queen ? "queen" : "king") + ".gif");			
-			img.setAttribute("draggable", "false");
-			
-			var dot = front.appendChild(document.createElement("div"));		
-			dot.innerHTML = Symbols[this.suit];		
-			dot.setAttribute("class", "spotA1");	
-			dot = front.appendChild(document.createElement("div"));		
-			dot.innerHTML = Symbols[this.suit];					
-			dot.setAttribute("class", "spotC5");				
+			this.face.style.visibility = "visible";
+			this.face.setAttribute("src", "http://www.brainjar.com/css/cards/graphics/" + RANK_NAMES[this.rank] + ".gif");
 		}
-		if (this.el.parentElement) {
-			this.el.parentElement.setAttribute("class", (this.el.parentElement.getAttribute("class")+"").replace(/\s*down/g, ""));
+		for (var i in this.dots) {
+			var dot = this.dots[i];
+			dot.innerHTML = "";
+			if (RANK_DOTS[this.rank].indexOf(dot.className) > -1) {
+				dot.innerHTML = SUIT_SYMBOLS[this.suit];
+			}
 		}
-	}	else {
-		this.el.setAttribute("class", "card down");
-		if (this.el.parentElement) {
-			this.el.parentElement.setAttribute("class", this.el.parentElement.getAttribute("class") + " down");
+		this.index1.rankDiv.innerHTML = isNaN(RANK_NAMES[this.rank]) ? RANK_NAMES[this.rank].charAt(0).toUpperCase() : RANK_NAMES[this.rank];
+		this.index2.rankDiv.innerHTML = isNaN(RANK_NAMES[this.rank]) ? RANK_NAMES[this.rank].charAt(0).toUpperCase() : RANK_NAMES[this.rank];
+	}
+});
+
+Object.defineProperty(Front.prototype, 'suit', {
+	get: function () { return this._suit; },
+    set: function(value) {
+		this._suit = value;
+		for (var i in SUIT_NAMES) {
+			if (i > 0) {
+				this.element.classList.remove(SUIT_NAMES[i]);
+			}
+		}
+		
+		this.element.classList.add(SUIT_NAMES[this.suit]);
+		
+		for (var i in this.dots) {
+			var dot = this.dots[i];
+			dot.innerHTML = "";
+			if (RANK_DOTS[this.rank].indexOf(dot.className) > -1) {
+				dot.innerHTML = SUIT_SYMBOLS[this.suit];
+			}
+		}
+		this.index1.suitDiv.innerHTML = SUIT_SYMBOLS[this.suit];
+		this.index2.suitDiv.innerHTML = SUIT_SYMBOLS[this.suit];
+    }
+});
+
+
+function Card(rank, suit, up) {
+	this.element = document.createElement("li");
+	this.element.className = "card";
+	this.front = new Front(rank, suit);
+	this.element.appendChild(this.front.element);
+	this.rank = rank;
+	this.suit = suit;
+	this.up = up;
+	this.draggable = false;
+	this.element.addEventListener("click", this, false);
+	this.element.addEventListener("dragstart", this, false);
+	this.element.addEventListener("dragover", this, false);
+	this.element.addEventListener("dragleave", this, false);
+	this.element.addEventListener("dragend", this, false);
+	this.element.addEventListener("drop", this, false);
+}
+
+Card.prototype.flip = function () {
+	this.up = !this.up;
+}
+
+Card.prototype.handleEvent = function(e) {
+    switch (e.type) {
+        case "click": this.onclick(e); break;
+        case "dragstart": this.ondragstart(e); break;
+		case "dragover": this.ondragover(e); break;
+		case "dragleave": this.ondragleave(e); break;
+		case "dragend": this.ondragend(e); break;
+		case "drop": this.ondrop(e); break;
+    }
+}
+
+Card.prototype.onclick = function(ev) {
+}
+
+Card.prototype.ondragstart = function(ev) {
+	console.log(this.up, this.draggable);
+	if (this.up && this.draggable) {
+		var parent = this.element.parentElement;
+		var atCard = false;
+		for (var i = 0; i < parent.children.length; i++) {
+			if (parent.children[i] == this.element) {
+				atCard = true;
+			}
+			if (atCard) {
+				dragStack.push(parent.children[i]);
+			}
+		}
+	}
+}
+
+Card.prototype.ondragover = function(ev) {
+}
+
+Card.prototype.ondragleave = function(ev) {
+}
+
+Card.prototype.ondragend = function(ev) {
+}
+
+Card.prototype.ondrop = function(ev) {
+}
+
+Object.defineProperty(Card.prototype, 'rank', {
+	get: function () { return this._rank; },
+    set: function(value) {
+		if (value < 0 || value > 13) throw new RangeError("Rank must be between 0 (joker) and 13 (king)");
+		this._rank = value;
+		this.front.rank = this.rank;
+	}
+});
+
+Object.defineProperty(Card.prototype, 'suit', {
+	get: function () { return this._suit; },
+    set: function(value) {
+		if (value < 0 || value > 4) throw new RangeError("Suit must be between 0 (joker) and 4 (clubs)");
+		this._suit = value;
+		this.front.suit = this.suit;
+	}
+});
+
+Object.defineProperty(Card.prototype, 'up', {
+	get: function () { return this._up; },
+    set: function(value) {
+		this._up = value ? true : false;
+		if (this.up) {
+			this.element.classList.add("up");
+		} else {
+			this.element.classList.remove("up");
+		}
+	}
+});
+
+Object.defineProperty(Card.prototype, 'draggable', {
+	get: function () { return this._draggable; },
+    set: function(value) {
+		this._draggable = value;
+		this.element.setAttribute("draggable", value);
+	}
+});
+
+function Deck() {
+	this.element = document.createElement("ul");
+	this.element.className = "deck";
+	for (var suit = 1; suit <= 4; suit++) {
+		for (var rank = 1; rank < 14; rank++) {
+			var card = new Card(rank, suit, true);
+			card.draggable = true;
+			this.element.appendChild(card.element);
+		}
+	}
+}
+
+Deck.prototype.shuffle = function () {
+	for (var i = this.element.children.length - 1; i > 1; i++) {
+		var j = Math.floor(Math.random() * i - 1);
+		var a = this.element.children[i];
+		var b = this.element.children[j];
+		this.element.insertBefore(b, a);
+		this.element.insertBefore(a, this.element.children[j]);
+	}
+}
+
+/*
+var Front = new Proxy(HTMLDivElement, {
+	construct: function () {
+	},
+});
+*/
+/*
+function makeFront(rank, suit) {
+	var view = document.createElement("div");
+	view.classList.add("face");
+	
+	for (var c in "ABC") {
+		for (var r = 1; r <= 5; r++) {
+			var dot = view.appendChild(document.createElement("div"));
+			dot.className = "spot" + c + r;
 		}
 	}
 	
-	this.el.setAttribute("draggable", "true");
+	var handler = {
+		get: function (target, name, receiver) {
+			switch (prop) {
+				case "rank":
+					var rank = target.querySelector(".index>.rank").innerHTML;
+					switch (rank) {
+						case "A": return 1;
+						case "J": return 11;
+						case "Q": return 12;
+						case "K": return 13;
+						default:
+							return Number(rank);
+					}
+				case "suit":
+					var suit = target.querySelector(".index>.suit").innerHTML;
+					switch (rank) {
+						case "A": return 1;
+						case "J": return 11;
+						case "Q": return 12;
+						case "K": return 13;
+						default:
+							return Number(rank);
+					}
 
-	this.el.card = this;
-}
-
-function Stack() {	
-}
-
-Stack.prototype.attach = function(el) {
-	this.el = el;
-	this.el.setAttribute("class", this.constructor.name.toLowerCase());	
-	el.stack = this;
-}
-
-function pushItem(list, item) {	
-	var li = list.appendChild(document.createElement("li"));
-	li.appendChild(item);
-	if (item.card) { item.card.refresh();	}
-}
-
-function popItem(list) {
-	if (list.children.length == 0) return undefined;
-	var li = list.children[list.children.length - 1];	
-	var item = li.children[0];	
-	li.removeChild(item);
-	list.removeChild(li);	
-	return item.card;
-	
-}
-
-Stack.prototype.push = function (card) {
-	pushItem(this.el, card.el);
-}
-
-Stack.prototype.pop = function () {
-	return popItem(this.el);
-}
-
-Stack.prototype.getLength= function () {
-	return this.el.children.length;
-}
-
-Stack.prototype.top = function () {
-	if (this.el.children.length == 0) return undefined;
-	var li = this.el.children[this.el.children.length - 1];	
-	var item = li.children[0];		
-	return item.card;
-}
-
-function Deck(el) {
-	this.attach(el);
-	el.setAttribute("class", "deck");
-	el.stack = this;
-	for (var s = Hearts; s <= Clubs; s++) {
-		for (var r = Ace; r <= King; r++) {
-			var card = new Card(r, s); 
-			this.push(card);
-			//card.flip();
+			}
+			return target[name];
+		},
+		set: function (obj, prop, value) {
+			obj[prop] = value;
+			switch (prop) {
+				case "rank":
+					obj.index1.rankDiv.innerHTML = RANK_NAMES[obj.rank].charAt(0).toUpperCase();
+					obj.index2.rankDiv.innerHTML = RANK_NAMES[obj.rank].charAt(0).toUpperCase();
+					break;
+				case "suit":
+					obj.index1.rankDiv.innerHTML = SUIT_SYMBOLS[obj.suit];
+					obj.index2.rankDiv.innerHTML = SUIT_SYMBOLS[obj.suit];
+					for (var i = 0; i < obj.dots.length; i++) {
+						dots[i].innerHTML = SUIT_SYMBOLS[obj.suit];
+					}
+					break;
+			}
 		}
+	};
+	return new Proxy(view, handler);	
+}
+
+function makeCard(suit, rank, up) {
+	var card = document.createElement("li");
+	card.classList.add("card");
+	
+	var front = card.appendChild(document.createElement("div"));
+	front.classList.add("front");
+	if (up) {
+		front.classList.add("up");
 	}
+	
+	var index1 = front.appendChild(document.createElement("div"));
+	index1.classList.add("index");
+	
+	var index2 = front.appendChild(document.createElement("div"));
+	index2.classList.add("index");
+	index2.classList.add("reverse");
+	
+	index1.innerHTML = index2.innerHTML = RANK_NAMES[rank].charAt(0).toUpperCase() + "<br/>" + SUIT_SYMBOLS[suit];
+	
+	// TODO: Add dots
+	
+	return card;
 }
 
-Deck.prototype = new Stack();
-
-function Pile(el) {
-	this.el = el;
-	el.setAttribute("class", "pile");
-	el.stack = this;
+function makeStack(className) {
+	var stack = document.createElement("ul");
+	stack.classList.add(className);
+	return stack;
 }
 
-Pile.prototype = new Stack();
-
-function Foundation(el) {
-	this.el = el;
-	el.setAttribute("class", "foundation");
-	el.stack = this;
+function makeDeck() {
+	var deck = makeStack("deck");
+	for (var suit = 1; suit <= 4; suit++) {
+		for (var rank = 1; rank < 14; rank++) {
+			var card = makeCard(suit, rank, true);
+			deck.appendChild(card);
+		}
+	}	
+	return deck;
 }
-
-Foundation.prototype = new Stack();
-
-function PlayingArea(el) {
-	this.el = el;
-	el.setAttribute("class", "table");
-	el.stack = this;
-}
-
-PlayingArea.prototype = new Stack();
+*/

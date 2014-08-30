@@ -1,6 +1,5 @@
 /*
 Some CSS and images from http://www.brainjar.com/css/cards/default.asp
-This should be cleaned up a lot
 */
 body {
 	background: #277714;
@@ -14,7 +13,7 @@ body {
   position: absolute;
   width:  3.75em;
   height: 5.00em;
-  box-shadow: 0 0 1px 1px #000;
+  box-shadow: 0 0 1px 1px rgba(0,0,0,50%);
   border-radius: 6px;
   /* cursor: pointer; */
   transition: all 1s
@@ -24,20 +23,25 @@ body {
 	color: black;
 }
 
-.hearts, .diamonds {
+.hearts, .diams {
 	color: red;
 }
 
-.card>.front {
+.card .front {
   background-color: #ffffff;
   position: absolute;
   width: 100%;
   height: 100%;
-  visibility: hidden;
+  /*border-radius: 8px;*/
+  /*-webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;*/
+  cursor: default;
 }
 
-.up>.front {
-	visibility: visible;
+.down>.front {
+		visibility: hidden;
 }
 
 .spotA1 { position: absolute; left: 0.60em; top: 0.5em; }
@@ -67,7 +71,7 @@ body {
   top:  0.250em;
 }
 
-.index {
+.index, .flipindex {
   font-size: 50%;
   font-weight: bold;
   text-align: center;
@@ -75,12 +79,12 @@ body {
   line-height: 70%;
 }
 
-.index !.reverse {  
+.index {  
   left: 0.25em;
   top:  0.25em;  
 }
 
-.reverse {  
+.flipindex {  
   right: 0.25em;
   bottom:  0.25em;
   transform: rotate(180deg);
@@ -99,9 +103,8 @@ body {
 }
 
 .deck, .pile, .hand, .table, .foundation {
-	list-style: none;
+	list-style-type: none;
 	padding: 0;
-	position: relative;
 }
 
 .pile {
@@ -117,18 +120,18 @@ body {
 .deck li:first-child .card {
 	box-shadow: .2em .2em .5em #333;
 }
-
+*/
 .deck li, .table li {
 	display: inline-block;	
 	position: relative;
 }
-*/
-ul.deck li { left: 8px;  bottom: 4px; }
-ul.deck li:nth-child(1)  { left: 0;    bottom: 0; }
-ul.deck li:nth-child(2)  { left: 2px;  bottom: 1px; }
-ul.deck li:nth-child(3)  { left: 4px;  bottom: 2px; }
-ul.deck li:nth-child(4)  { left: 6px;  bottom: 3px; }
-ul.deck li:nth-child(5)  { left: 8px;  bottom: 4px; }
+
+ul.deck li { left: 8px;  bottom: 31px; }
+ul.deck li:nth-child(1)  { left: 0;    bottom: 27px; }
+ul.deck li:nth-child(2)  { left: 2px;  bottom: 28px; }
+ul.deck li:nth-child(3)  { left: 4px;  bottom: 29px; }
+ul.deck li:nth-child(4)  { left: 6px;  bottom: 30px; }
+ul.deck li:nth-child(5)  { left: 8px;  bottom: 31px; }
 
 .pile li {
 	height: 1em;
@@ -166,9 +169,9 @@ ul.deck li:nth-child(5)  { left: 8px;  bottom: 4px; }
 	min-height: 6em;
 }
 
-ul.table li:nth-last-child(3n)  { left: 0;  bottom: 0px; transition: all 1s}
-ul.table li:nth-last-child(3n+2) { left: 1em; bottom: 0px;  transition: all 1s}
-ul.table li:nth-last-child(3n+1)  { left: 2em;  bottom: 0px;    transition: all 1s}
+ul.table li:nth-last-child(3n)  { left: 0;  bottom: 27px; transition: all 1s}
+ul.table li:nth-last-child(3n+2) { left: 1em; bottom: 27px;  transition: all 1s}
+ul.table li:nth-last-child(3n+1)  { left: 2em;  bottom: 27px;    transition: all 1s}
 /*
 ul.table li:nth-last-child(3) .card, 
 ul.table li:nth-last-child(2) .card,
