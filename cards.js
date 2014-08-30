@@ -2,7 +2,7 @@ var dragStack = [];
 
 const RANK_NAMES = ["joker", "ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "jack", "queen", "king"];
 const SUIT_NAMES = ["joker", "spades", "hearts", "diamonds", "clubs"];
-const SUIT_SYMBOLS = ["", "&spades;", "&hearts;", "&diams;", "&clubs;"];
+const SUIT_SYMBOLS = ["J", "&spades;", "&hearts;", "&diams;", "&clubs;"];
 const RANK_DOTS = [
 	["spotA1", "spotC5"],
 	["ace"],
@@ -35,6 +35,142 @@ const RANK_DOTS = [
 	["spotA1", "spotC5"],
 	["spotA1", "spotC5"]
 ];
+
+function CardModel(rank, suit, up, draggable) {
+	this.rank = rank;
+	this.suit = suit;
+	this.up = up;
+	this.draggable = draggable;
+}
+
+CardModel.prototype.flip = function () {
+	this.up = !this.up;
+}
+
+// Getters an setters for CardModel
+Object.defineProperty(CardModel.prototype, 'rank', {
+	get: function () { return this._rank; },
+    set: function(value) {
+		if (value < 0 || value > 13) throw new RangeError("Rank must be between 0 (joker) and 13 (king)");
+		this._rank = value;
+	}
+});
+
+Object.defineProperty(CardModel.prototype, 'suit', {
+	get: function () { return this._suit; },
+    set: function(value) {
+		if (value < 0 || value > 4) throw new RangeError("Suit must be between 0 and 4");
+		this._suit = value;
+	}
+});
+
+
+function CardView(model) {
+	this.model = model;
+	this.element = document.createElement("div");
+	this.element.className = "front";
+	this.face = this.element.appendChild(document.createElement("img"));
+	this.face.className = "face";
+	
+	this.index1 = {element: this.element.appendChild(document.createElement("div"))};
+	this.index1.element.className = "index";
+	this.index1.rankDiv = this.index1.element.appendChild(document.createElement("div"));
+	this.index1.rankDiv.className = "rank";
+	this.index1.suitDiv = this.index1.element.appendChild(document.createElement("div"));
+	this.index1.suitDiv.className = "suit";
+	
+	this.index2 = {element: this.element.appendChild(document.createElement("div"))};
+	this.index2.element.classList.add("index");
+	this.index2.element.classList.add("reverse");
+	this.index2.rankDiv = this.index2.element.appendChild(document.createElement("div"));
+	this.index2.rankDiv.className = "rank";
+	this.index2.suitDiv = this.index2.element.appendChild(document.createElement("div"));
+	this.index2.suitDiv.className = "suit";
+	
+	this.dots = [];
+	var dot = this.element.appendChild(document.createElement("div"));
+	dot.className = "ace";
+	this.dots.push(dot);
+	for (var c in "ABC") {
+		var cn = "ABC"[c];
+		for (var r = 1; r <= 5; r++) {
+			var dot = this.element.appendChild(document.createElement("div"));
+			dot.className = "spot" + cn + r;
+			this.dots.push(dot);
+		}
+	}
+	
+	this.update("suit");
+	this.update("rank");
+	this.update("up");
+	this.update("draggable");
+}
+
+CardView.prototype.update(property) {
+	switch (property) {
+		case "suit":
+			if (this.model.rank >= 0 && this.model.rank < 11) {
+				this.face.style.visibility = "hidden";
+				this.face.setAttribute("src", "");
+			} else {
+				this.face.style.visibility = "visible";
+				this.face.setAttribute("src", "http://www.brainjar.com/css/cards/graphics/" + RANK_NAMES[this.model.rank] + ".gif");
+			}
+			for (var i in this.dots) {
+				var dot = this.dots[i];
+				dot.innerHTML = "";
+				if (RANK_DOTS[this.model.rank].indexOf(dot.className) > -1) {
+					dot.innerHTML = SUIT_SYMBOLS[this.model.suit];
+				}
+			}
+			this.index1.rankDiv.innerHTML = this.model.rank > 10 ? RANK_NAMES[this.model.rank].charAt(0).toUpperCase() : RANK_NAMES[this.model.rank];
+			this.index2.rankDiv.innerHTML = this.model.rank > 10 ? RANK_NAMES[this.model.rank].charAt(0).toUpperCase() : RANK_NAMES[this.model.rank];
+			break;
+		case "rank":
+			for (var i in SUIT_NAMES) {
+				if (i > 0) {
+					this.element.classList.remove(SUIT_NAMES[i]);
+				}
+			}
+			
+			this.element.classList.add(SUIT_NAMES[this.model.suit]);
+			
+			for (var i in this.dots) {
+				var dot = this.dots[i];
+				dot.innerHTML = "";
+				if (RANK_DOTS[this.model.rank].indexOf(dot.className) > -1) {
+					dot.innerHTML = SUIT_SYMBOLS[this.model.suit];
+				}
+			}
+			this.index1.suitDiv.innerHTML = SUIT_SYMBOLS[this.model.suit];
+			this.index2.suitDiv.innerHTML = SUIT_SYMBOLS[this.model.suit];
+			break;
+		case "up":
+			if (this.model.up) {
+				this.element.classList.add("up");
+			} else {
+				this.element.classList.remove("up");
+			}
+			break;
+		case "draggable":
+			this.element.setAttribute("draggable", this.model.draggable);
+			break;
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function Front(rank, suit) {
 	this.element = document.createElement("div");
