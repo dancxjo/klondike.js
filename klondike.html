@@ -7,46 +7,9 @@
 		<script src="klondike.js"></script>
 	</head>
 	<body>
-		<button onclick="increment()">Increment</button>
-		<button onclick="test.flip()">Flip</button>
-		<ul id="deck" class="deck"></ul>
-		<ul id="foundation" class="foundation"></ul>
 		<script>
-			function increment() {
-				console.log(test);
-				try {
-					test.update("rank", test.get("rank") + 1);
-				} catch (e) {
-					test.update("rank", 1);
-					test.update("suit", test.get("suit") + 1);
-				}
-				console.log(test);
-			}
-			
-			var test = new Card(1, 1, true, true);
-			document.getElementById("deck").appendChild(test.view.element);
-			
-			var deck = new Deck();
-			deck.shuffle();
-			document.body.appendChild(deck.view.element);
-			
-			document.getElementById("foundation").ondragover = function (ev) {
-				ev.preventDefault();
-				return false;
-			}
-			
-			document.getElementById("foundation").ondrop = function (ev) {
-				for (var i in dragStack) {
-					var card = dragStack[i];
-					console.log(card);
-					this.appendChild(card);
-				}
-				ev.preventDefault();
-				return false;
-			}
-			
-/*			var game = makeKlondikeGame();
-			document.body.appendChild(game);*/
+			var game = new KlondikeGame();
+			document.body.appendChild(game.view.element);
 		</script>
 	</body>
 </html>
