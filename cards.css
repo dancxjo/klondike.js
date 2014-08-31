@@ -109,20 +109,11 @@ body {
 	font-size: 20pt;
 	width:  3.75em;		
 }
-/*
-.deck li .card, .table li .card {
-	box-shadow: none;
-}
 
-.deck li:first-child .card {
-	box-shadow: .2em .2em .5em #333;
-}
-
-.deck li, .table li {
-	display: inline-block;	
+.deck li, .pile li, .hand li, .table li, .foundation li {
 	position: relative;
 }
-*/
+
 ul.deck li { visibility: hidden; left: 8px;  bottom: 4px; }
 ul.deck li:nth-child(1)  { visibility: visible; left: 0;    bottom: 0; }
 ul.deck li:nth-child(2)  { visibility: visible; left: 2px;  bottom: 1px; }
@@ -140,10 +131,10 @@ ul.deck li:last-child { visibility: visible; }
 	height: 4px;
 }
 
-.foundation, .deck {
+.foundation, .deck, .table, .pile {
 	font-size: 20pt;
 	width:  3.75em;
-  height: 5.00em;
+	height: 5.00em;
 	border: 1px dotted #cfcfcf;
 	border-radius: 6px;
 	float: left;
@@ -151,31 +142,14 @@ ul.deck li:last-child { visibility: visible; }
 	padding: 0;
 }
 
+.table {
+	width: 6em;
+}
+
 #piles {
 	clear: both;
-}
-
-#playingArea {
-		float: left;
-		font-size: 20pt;
-		width:  6em;		
-		margin-right: 1em;
-		height: 5.00em;
-}
-
-#top {
-	font-size: 20pt;
-	min-height: 6em;
 }
 
 ul.table li:nth-last-child(3n)  { left: 0;  bottom: 0px; transition: all 1s}
 ul.table li:nth-last-child(3n+2) { left: 1em; bottom: 0px;  transition: all 1s}
 ul.table li:nth-last-child(3n+1)  { left: 2em;  bottom: 0px;    transition: all 1s}
-/*
-ul.table li:nth-last-child(3) .card, 
-ul.table li:nth-last-child(2) .card,
-ul.table li:nth-last-child(1) .card {
-	box-shadow: .2em .2em .5em #333;	
-}
-
-*/

@@ -111,7 +111,7 @@ Object.defineProperty(CardModel.prototype, 'suit', {
 });
 
 function CardView(model) {
-	var element = document.createElement("li");
+	var element = document.createElement("div");
 	element.className = "card";
 	
 	this.front = element.appendChild(document.createElement("div"));
@@ -152,11 +152,11 @@ function CardView(model) {
 	updaters.suit = function (view) {
 		for (var i in SUIT_NAMES) {
 			if (i > 0) {
-				view.element.classList.remove(SUIT_NAMES[i]);
+				view.front.classList.remove(SUIT_NAMES[i]);
 			}
 		}
 		
-		view.element.classList.add(SUIT_NAMES[view.model.suit]);
+		view.front.classList.add(SUIT_NAMES[view.model.suit]);
 
 		for (var i in view.dots) {
 			var dot = view.dots[i];
@@ -261,7 +261,8 @@ function StackView(model) {
 	updaters.children = function (view) {
 		view.element.innerHTML = "";
 		for (var i = 0; i < view.model.children.length; i++) {
-			view.element.appendChild(view.model.children[i].view.element);
+			var li = view.element.appendChild(document.createElement("li"));
+			li.appendChild(view.model.children[i].view.element);
 		}
 	}
 
@@ -274,7 +275,8 @@ StackView.prototype = new View();
 function Stack(className) {
 	var model = new StackModel(className);
 	var view = new StackView(model);
-	this.generate(model, view);
+	var handlers = {};
+	this.generate(model, view, handlers);
 }
 
 Stack.prototype = new Controller();
