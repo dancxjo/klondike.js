@@ -39,11 +39,15 @@ const RANK_DOTS = [
 
 // Controller
 function Controller() {
+	this.handlers = {};
 }
 
 Controller.prototype.generate = function (model, view) {
 	this.model = model;
 	this.view = view;
+	for (var i in this.handlers) {
+		this.view.element.addEventListener(i, this, false);
+	}
 }
 
 Controller.prototype.get = function (property) {
@@ -55,13 +59,19 @@ Controller.prototype.update = function (property, value) {
 	this.view.update(property);
 }
 
+Controller.prototype.handleEvent = function (ev) {
+	return this.handlers[ev.type](ev, this);
+}
+
 // View
 function View() {
 	this.updaters = {};
-	this.update = function (property) {
-		this.updaters[property](this);
-	}
 }
+
+View.prototype.update = function (property) {
+	this.updaters[property](this);
+}
+
 
 View.prototype.generate = function (model, element) {
 	this.model = model;
@@ -203,6 +213,9 @@ CardView.prototype = new View();
 function Card(rank, suit, up, draggable) {
 	var model = new CardModel(rank, suit, up, draggable);
 	var view = new CardView(model);
+	this.__proto__.handlers.click = function (ev, controller) {
+		controller.flip();
+	}
 	this.generate(model, view);
 }
 
@@ -235,7 +248,6 @@ function DeckView(model) {
 	}
 
 	this.generate(model, element);
-
 }
 
 DeckView.prototype = new View();
@@ -250,11 +262,15 @@ function Deck() {
 Deck.prototype = new Controller();
 
 Deck.prototype.push = function (card) {
-	this.model.push(card);
-	this.view.update();
+	this.model.children.push(card);
+	this.view.update("children");
 }
 
-
+Deck.prototype.pop = function () {
+	var card = this.model.children.pop();
+	this.view.update("children");
+	return card;
+}
 
 
 
