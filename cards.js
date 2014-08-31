@@ -126,6 +126,14 @@ Object.defineProperty(CardModel.prototype, 'suit', {
 	}
 });
 
+Object.defineProperty(CardModel.prototype, 'color', {
+	get: function () { switch(this.suit) {
+		case 2: return "red";
+		case 3: return "red";
+	}; return "black";}
+});
+
+
 function CardView(model) {
 	var element = document.createElement("div");
 	element.className = "card";
@@ -296,7 +304,6 @@ function Stack(className) {
 	var view = new StackView(model);
 	var handlers = {
 		drop: function (ev, stack) {
-			alert("Drop event");
 			ev.preventDefault();
 			var dragStack = [];
 			for (var i = originStack.model.children.length - 1; i >= dragIndex; i--) {
@@ -304,7 +311,7 @@ function Stack(className) {
 			}
 			console.log(dragStack);
 			while (dragStack.length > 0) {
-				stack.push(dragStack.shift());
+				stack.push(dragStack.pop());
 			}
 			stack.view.update("children");
 			originStack.view.update("children");

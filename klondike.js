@@ -4,7 +4,7 @@ function KlondikeModel() {
 	
 	this.deck = new Stack();
 	this.deck.model.generate();
-//	this.deck.shuffle();
+	this.deck.shuffle();
 		
 	this.table = new Stack("table");
 	
@@ -28,13 +28,52 @@ function KlondikeModel() {
 	for (var a = 0; a < 7; a++) {
 		this.piles[a].view = new PileView(this.piles[a].model);
 		this.piles[a].view.controller = this.piles[a].model.controller;
-		this.piles[a].addHandler("dragover", function (ev, stack) {
-			ev.preventDefault();
-			return false;
+		this.piles[a].addHandler("click", function (ev, pile) {
+			if (pile.model.children.length > 0) {
+				if (!pile.model.children[pile.model.children.length - 1].model.up) {
+					pile.model.children[pile.model.children.length - 1].flip();
+					pile.view.update("children");
+				}
+			}
 		});
+
+
+		this.piles[a].addHandler("dragover", function (ev, pile) {
+			if (pile.model.children.length > 0) {
+				if (originStack.model.children[dragIndex].model.color != pile.model.children[pile.model.children.length - 1].model.color) {
+					if (originStack.model.children[dragIndex].model.rank == pile.model.children[pile.model.children.length - 1].model.rank - 1) {
+						ev.preventDefault();
+						return false;
+					}
+				}
+			} else {
+				if (originStack.model.children[dragIndex].model.rank == 13) {
+					ev.preventDefault();
+					return false;
+				}
+			}
+		});
+		
+		this.piles[a].addHandler("drop", function (ev, stack) {
+			ev.preventDefault();
+			var dragStack = [];
+			for (var i = originStack.model.children.length - 1; i >= dragIndex; i--) {
+				dragStack.push(originStack.pop());
+			}
+			console.log(dragStack);
+			while (dragStack.length > 0) {
+				stack.push(dragStack.pop());
+			}
+			stack.view.update("children");
+			originStack.view.update("children");
+			originStack = null;
+			dragIndex = null;
+			
+		});
+		
 		for (var b = a; b < 7; b++) {
 			var card = this.deck.pop();
-			if (a >= b - 2) {
+			if (a == b) {
 				card.flip();
 			}
 			this.piles[b].push(card);
@@ -114,8 +153,6 @@ KlondikeGame.prototype.draw = function (game) {
 
 KlondikeGame.prototype.setupFoundation = function (game, foundation) {
 	foundation.addHandler("dragover", function (game) { return function (ev, foundation) {
-		//console.log(originStack.model.children.length);
-		//console.log(dragIndex);
 		if (originStack.model.children.length - 1 == dragIndex) {	// Only accept single cards
 			console.log("Can I add this card?");
 			if (foundation.model.children.length == 0) {
