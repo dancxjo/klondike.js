@@ -166,8 +166,12 @@ CardView.prototype.update = function (property) {
 		case "up":
 			if (this.model.up) {
 				this.element.classList.add("up");
+				//if (this.front.element)
+				this.element.appendChild(this.front);
 			} else {
 				this.element.classList.remove("up");
+				//if (this.front.element)
+				this.element.removeChild(this.front);
 			}
 			break;
 		case "draggable":
