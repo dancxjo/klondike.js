@@ -63,6 +63,19 @@ Controller.prototype.handleEvent = function (ev) {
 	return this.handlers[ev.type](ev, this);
 }
 
+Controller.prototype.addHandler = function (name, handler) {
+	if (this.handlers[name]) {
+		this.removeHandler(name);
+	}
+	this.handlers[name] = handler;
+	this.view.element.addEventListener(name, this, false);
+}
+
+Controller.prototype.removeHandler = function (name) {
+	this.view.element.removeEventListener(name, this.handlers[name]);
+	delete this.handlers[name];
+}
+
 // View
 function View() {
 }
@@ -240,7 +253,9 @@ function StackModel(className) {
 StackModel.prototype.generate = function () {
 	for (var suit = 1; suit <= 4; suit++) {
 		for (var rank = 1; rank < 14; rank++) {
-			this.children.push(new Card(rank, suit, false, false));
+			var card = new Card(rank, suit, false, false);
+			//card.addHandler("click", function (ev, controller) {controller.flip();});
+			this.children.push(card);
 		}
 	}
 }

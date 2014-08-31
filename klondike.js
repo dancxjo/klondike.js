@@ -5,15 +5,8 @@ function KlondikeModel() {
 	this.deck = new Stack();
 	this.deck.model.generate();
 	this.deck.shuffle();
-	
+		
 	this.table = new Stack("table");
-	
-	this.deck.handlers.click = function (ev, controller) {
-		alert("Clicked");
-		var card = controller.pop();
-		card.flip();
-		controller.table.push(card);
-	}
 	
 	this.foundations = [
 		new Stack("foundation"),
@@ -40,6 +33,13 @@ function KlondikeModel() {
 			}
 			this.piles[b].push(card);
 		}
+	}
+	
+	for (var i = 0; i < this.foundations.length; i++) {
+		this.foundations[i].addHandler("click", function (ev, controller) {
+			alert("Clicked");
+		});
+		
 	}
 }
 
@@ -68,6 +68,31 @@ function KlondikeGame() {
 	var view = new KlondikeView(model);
 	var handlers = {};
 	this.generate(model, view, handlers);	
+	this.setupDraw(this);
 }
 
 KlondikeGame.prototype = new Controller();
+
+KlondikeGame.prototype.setupDraw = function (game) {
+	game.model.deck.addHandler("click", function (game) { return function (ev, card) {
+		if (game.model.deck.model.children.length > 0) {
+			game.draw(game);
+		} else {
+			while (game.model.table.model.children.length > 0) {
+				var card = game.model.table.pop();
+				card.flip();
+				game.model.deck.push(card);
+			}
+			game.model.deck.view.update("children");
+			game.model.table.view.update("children");
+		}
+	}}(game));
+}
+
+KlondikeGame.prototype.draw = function (game) {
+	var card = game.model.deck.pop();
+	card.flip();
+	game.model.table.push(card);
+	game.model.deck.view.update("children");
+	game.model.table.view.update("children");
+}
