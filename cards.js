@@ -39,11 +39,11 @@ const RANK_DOTS = [
 
 // Controller
 function Controller() {
-	this.handlers = {};
 }
 
-Controller.prototype.generate = function (model, view) {
+Controller.prototype.generate = function (model, view, handlers) {
 	this.model = model;
+	this.handlers = handlers;
 	this.view = view;
 	for (var i in this.handlers) {
 		this.view.element.addEventListener(i, this, false);
@@ -65,7 +65,6 @@ Controller.prototype.handleEvent = function (ev) {
 
 // View
 function View() {
-	this.updaters = {};
 }
 
 View.prototype.update = function (property) {
@@ -73,9 +72,10 @@ View.prototype.update = function (property) {
 }
 
 
-View.prototype.generate = function (model, element) {
+View.prototype.generate = function (model, element, updaters) {
 	this.model = model;
 	this.element = element;
+	this.updaters = updaters;
 	for (var i in this.updaters) {
 		this.update(i);
 	}
@@ -147,7 +147,9 @@ function CardView(model) {
 		}
 	}
 	
-	this.__proto__.updaters.suit = function (view) {
+	var updaters = {};
+	
+	updaters.suit = function (view) {
 		for (var i in SUIT_NAMES) {
 			if (i > 0) {
 				view.element.classList.remove(SUIT_NAMES[i]);
@@ -168,7 +170,7 @@ function CardView(model) {
 		view.index2.suitDiv.innerHTML = SUIT_SYMBOLS[view.model.suit];
 	}
 	
-	this.__proto__.updaters.rank = function (view) {			
+	updaters.rank = function (view) {			
 		if (view.model.rank >= 0 && view.model.rank < 11) {
 			view.face.style.visibility = "hidden";
 			view.face.setAttribute("src", "");
@@ -191,7 +193,7 @@ function CardView(model) {
 		view.index2.suitDiv.innerHTML = SUIT_SYMBOLS[view.model.suit];
 	}
 	
-	this.__proto__.updaters.up = function (view) {
+	updaters.up = function (view) {
 		if (view.model.up) {
 			view.element.classList.add("up");
 			view.element.appendChild(view.front);
@@ -201,11 +203,11 @@ function CardView(model) {
 		}
 	}
 	
-	this.__proto__.updaters.draggable = function (view) {
+	updaters.draggable = function (view) {
 		view.element.setAttribute("draggable", view.model.draggable);
 	}
 
-	this.generate(model, element);
+	this.generate(model, element, updaters);
 }
 
 CardView.prototype = new View();
@@ -213,12 +215,13 @@ CardView.prototype = new View();
 function Card(rank, suit, up, draggable) {
 	var model = new CardModel(rank, suit, up, draggable);
 	var view = new CardView(model);
+	var handlers = {};
 	/*
-	this.__proto__.handlers.click = function (ev, controller) {
+	handlers.click = function (ev, controller) {
 		controller.flip();
 	}
 	*/
-	this.generate(model, view);
+	this.generate(model, view, handlers);
 }
 
 Card.prototype = new Controller();
@@ -254,15 +257,15 @@ StackModel.prototype.shuffle = function () {
 function StackView(model) {
 	var element = document.createElement("ul");
 	element.className = model.className;	
-	
-	this.__proto__.updaters.children = function (view) {
+	var updaters = {};
+	updaters.children = function (view) {
 		view.element.innerHTML = "";
 		for (var i = 0; i < view.model.children.length; i++) {
 			view.element.appendChild(view.model.children[i].view.element);
 		}
 	}
 
-	this.generate(model, element);
+	this.generate(model, element, updaters);
 }
 
 StackView.prototype = new View();
