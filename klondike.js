@@ -3,10 +3,8 @@ function KlondikeModel() {
 	this.score = 0;
 	
 	this.deck = new Stack();
-	this.deck.model.addStandard();
+	this.deck.model.generate();
 	this.deck.shuffle();
-	
-	
 	
 	this.foundations = [
 		new Stack("foundation"),

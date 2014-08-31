@@ -234,10 +234,10 @@ function StackModel(className) {
 	this.className = className ? className : "deck";
 }
 
-StackModel.prototype.addStandard = function () {
+StackModel.prototype.generate = function () {
 	for (var suit = 1; suit <= 4; suit++) {
 		for (var rank = 1; rank < 14; rank++) {
-			this.children.push(new Card(rank, suit, true, true));
+			this.children.push(new Card(rank, suit, false, false));
 		}
 	}
 }
