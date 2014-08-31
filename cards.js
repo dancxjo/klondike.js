@@ -277,6 +277,9 @@ function StackView(model) {
 		view.element.innerHTML = "";
 		for (var i = 0; i < view.model.children.length; i++) {
 			var li = view.element.appendChild(document.createElement("li"));
+			if (!view.model.children[i].model.up) {
+				li.classList.add("down");
+			}
 			li.appendChild(view.model.children[i].view.element);
 		}
 	}
