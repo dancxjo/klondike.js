@@ -46,6 +46,8 @@ Controller.prototype.generate = function (model, view, handlers) {
 	this.model = model;
 	this.handlers = handlers;
 	this.view = view;
+	this.model.controller = this;
+	this.view.controller = this;
 	for (var i in this.handlers) {
 		this.view.element.addEventListener(i, this, false);
 	}
@@ -289,6 +291,50 @@ function StackView(model) {
 
 StackView.prototype = new View();
 
+function PileView(model) {
+	var element = document.createElement("ul");
+	element.className = model.className;	
+	var updaters = {};
+	updaters.children = function (view) {
+		view.element.innerHTML = "";
+		// Add all the down cards
+		for (var i = 0; i < view.model.children.length; i++) {
+			if (!view.model.children[i].model.up) {
+				var li = view.element.appendChild(document.createElement("li"));
+				li.classList.add("down");
+				li.appendChild(view.model.children[i].view.element);
+			}
+		}
+		
+		var metapile = view.element.appendChild(document.createElement("li"));
+		// Add all the up cards
+		for (var i = 0; i < view.model.children.length; i++) {
+			if (view.model.children[i].model.up) {
+				metapile.classList.add("up");
+				metapile.setAttribute("draggable", true);
+				metapile.appendChild(view.model.children[i].view.element);
+				metapile.ondragstart = (function (index, stack) { return function (ev) {
+					originStack = stack;
+					dragIndex = index;
+					//ev.preventDefault();
+					ev.stopPropagation();
+					//return false;
+				}})(i, view.controller);
+				
+				if (i < view.model.children.length - 1) {
+					var subpile = view.element.appendChild(document.createElement("ul"));
+					metapile.appendChild(subpile);
+					metapile = subpile.appendChild(document.createElement("li"));
+				}
+			}
+		}
+		
+	}
+
+	this.generate(model, element, updaters);
+}
+
+PileView.prototype = new View();
 
 function Stack(className) {
 	var model = new StackModel(className);
@@ -306,6 +352,8 @@ function Stack(className) {
 			}
 			stack.view.update("children");
 			originStack.view.update("children");
+			originStack = null;
+			dragIndex = null;
 		}
 	};
 	this.generate(model, view, handlers);
