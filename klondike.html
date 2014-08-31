@@ -27,12 +27,9 @@
 			document.getElementById("deck").appendChild(test.view.element);
 			
 			var deck = new Deck();
+			deck.shuffle();
 			document.body.appendChild(deck.view.element);
-			/*
-			var deck = new Deck();
-			//deck.shuffle();
-			document.body.appendChild(deck.element);
-			*/
+			
 			document.getElementById("foundation").ondragover = function (ev) {
 				ev.preventDefault();
 				return false;

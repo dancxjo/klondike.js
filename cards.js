@@ -213,9 +213,11 @@ CardView.prototype = new View();
 function Card(rank, suit, up, draggable) {
 	var model = new CardModel(rank, suit, up, draggable);
 	var view = new CardView(model);
+	/*
 	this.__proto__.handlers.click = function (ev, controller) {
 		controller.flip();
 	}
+	*/
 	this.generate(model, view);
 }
 
@@ -233,6 +235,15 @@ function DeckModel() {
 		for (var rank = 1; rank < 14; rank++) {
 			this.children.push(new Card(rank, suit, true, true));
 		}
+	}
+}
+
+DeckModel.prototype.shuffle = function () {
+	for (var i = this.children.length - 1; i > 0; i--) {
+		var j = Math.floor(Math.random() * (i + 1));
+		var a = this.children[i];
+		this.children[i] = this.children[j];
+		this.children[j] = a;
 	}
 }
 
@@ -272,7 +283,10 @@ Deck.prototype.pop = function () {
 	return card;
 }
 
-
+Deck.prototype.shuffle = function () {
+	this.model.shuffle();
+	this.view.update("children");
+}
 
 
 
