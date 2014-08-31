@@ -1,4 +1,5 @@
-var dragStack = [];
+var originStack = null;
+var dragIndex = null;
 
 const RANK_NAMES = ["joker", "ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "jack", "queen", "king"];
 const SUIT_NAMES = ["joker", "spades", "hearts", "diamonds", "clubs"];
@@ -254,7 +255,6 @@ StackModel.prototype.generate = function () {
 	for (var suit = 1; suit <= 4; suit++) {
 		for (var rank = 1; rank < 14; rank++) {
 			var card = new Card(rank, suit, false, false);
-			//card.addHandler("click", function (ev, controller) {controller.flip();});
 			this.children.push(card);
 		}
 	}
@@ -293,7 +293,21 @@ StackView.prototype = new View();
 function Stack(className) {
 	var model = new StackModel(className);
 	var view = new StackView(model);
-	var handlers = {};
+	var handlers = {
+		drop: function (ev, stack) {
+			ev.preventDefault();
+			var dragStack = [];
+			for (var i = originStack.model.children.length - 1; i >= dragIndex; i--) {
+				dragStack.push(originStack.pop());
+			}
+			console.log(dragStack);
+			while (dragStack.length > 0) {
+				stack.push(dragStack.shift());
+			}
+			stack.view.update("children");
+			originStack.view.update("children");
+		}
+	};
 	this.generate(model, view, handlers);
 }
 

@@ -69,6 +69,9 @@ function KlondikeGame() {
 	var handlers = {};
 	this.generate(model, view, handlers);	
 	this.setupDraw(this);
+	for (var i = 0; i < this.model.foundations.length; i++) {
+		this.setupFoundation(game, this.model.foundations[i]);
+	}
 }
 
 KlondikeGame.prototype = new Controller();
@@ -93,6 +96,19 @@ KlondikeGame.prototype.draw = function (game) {
 	var card = game.model.deck.pop();
 	card.flip();
 	game.model.table.push(card);
+	card.addHandler("dragstart", function (game) { return function (ev, card) {
+		originStack = game.model.table;
+		originIndex = game.model.table.length - 1;
+	}}(game));
+	card.update("draggable", true);
+
 	game.model.deck.view.update("children");
 	game.model.table.view.update("children");
+}
+
+KlondikeGame.prototype.setupFoundation = function (game, foundation) {
+	foundation.addHandler("dragover", function (game) { return function (ev, foundation) {
+		ev.preventDefault();
+		return false;
+	}}(game));
 }
