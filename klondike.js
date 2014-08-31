@@ -28,6 +28,10 @@ function KlondikeModel() {
 	for (var a = 0; a < 7; a++) {
 		this.piles[a].view = new PileView(this.piles[a].model);
 		this.piles[a].view.controller = this.piles[a].model.controller;
+		this.piles[a].addHandler("dragover", function (ev, stack) {
+			ev.preventDefault();
+			return false;
+		});
 		for (var b = a; b < 7; b++) {
 			var card = this.deck.pop();
 			if (a >= b - 2) {
@@ -130,3 +134,57 @@ KlondikeGame.prototype.setupFoundation = function (game, foundation) {
 		}
 	}}(game));
 }
+
+
+function PileView(model) {
+	var element = document.createElement("ul");
+	element.className = model.className;	
+	var updaters = {};
+	updaters.children = function (view) {
+		view.element.innerHTML = "";
+		// Add all the down cards
+		for (var i = 0; i < view.model.children.length; i++) {
+			if (!view.model.children[i].model.up) {
+				var li = view.element.appendChild(document.createElement("li"));
+				li.classList.add("down");
+				li.appendChild(view.model.children[i].view.element);
+			}
+		}
+		
+		var metapile = view.element.appendChild(document.createElement("li"));
+		// Add all the up cards
+		for (var i = 0; i < view.model.children.length; i++) {
+			if (view.model.children[i].model.up) {
+				metapile.classList.add("up");
+				metapile.setAttribute("draggable", true);
+				metapile.appendChild(view.model.children[i].view.element);
+				metapile.ondragstart = (function (index, stack) { return function (ev) {
+					originStack = stack;
+					dragIndex = index;
+					//ev.preventDefault();
+					ev.stopPropagation();
+					//return false;
+				}})(i, view.controller);
+				
+				if (i < view.model.children.length - 1) {
+					var subpile = view.element.appendChild(document.createElement("ul"));
+					metapile.appendChild(subpile);
+					metapile = subpile.appendChild(document.createElement("li"));
+				} else {
+					/*metapile.ondragover = (function (stack) { return function (ev) {
+						
+					}})(view.controller);
+
+					metapile.ondrop = (function (stack) { return function (ev) {
+					}})(view.controller);
+					*/
+				}
+			}
+		}
+		
+	}
+
+	this.generate(model, element, updaters);
+}
+
+PileView.prototype = new View();
