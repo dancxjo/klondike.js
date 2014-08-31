@@ -7,14 +7,29 @@
 		<script src="klondike.js"></script>
 	</head>
 	<body>
-		<button onclick=" try { test.rank++; } catch (e) { test.rank = 1; try { test.suit++; } catch (e) {test.suite = 1;} }">Increment</button>
-		<button onclick="test.flip();">Flip</button>
+		<button onclick="increment()">Increment</button>
+		<button onclick="test.flip()">Flip</button>
+		<ul id="deck" class="deck"></ul>
 		<ul id="foundation" class="foundation"></ul>
 		<script>
+			function increment() {
+				console.log(test);
+				try {
+					test.update("rank", test.get("rank") + 1);
+				} catch (e) {
+					test.update("rank", 1);
+					test.update("suit", test.get("suit") + 1);
+				}
+				console.log(test);
+			}
+			
+			var test = new Card(1, 1, true, true);
+			document.getElementById("deck").appendChild(test.view.element);
+			/*
 			var deck = new Deck();
 			//deck.shuffle();
 			document.body.appendChild(deck.element);
-			
+			*/
 			document.getElementById("foundation").ondragover = function (ev) {
 				ev.preventDefault();
 				return false;

@@ -2,9 +2,9 @@ var dragStack = [];
 
 const RANK_NAMES = ["joker", "ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "jack", "queen", "king"];
 const SUIT_NAMES = ["joker", "spades", "hearts", "diamonds", "clubs"];
-const SUIT_SYMBOLS = ["J", "&spades;", "&hearts;", "&diams;", "&clubs;"];
+const SUIT_SYMBOLS = ["*", "&spades;", "&hearts;", "&diams;", "&clubs;"];
 const RANK_DOTS = [
-	["spotA1", "spotC5"],
+	["ace"],
 	["ace"],
 	["spotB1",           "spotB5"],
 	["spotB1", "spotB3", "spotB5"],
@@ -49,7 +49,7 @@ CardModel.prototype.flip = function () {
 
 // Getters an setters for CardModel
 Object.defineProperty(CardModel.prototype, 'rank', {
-	get: function () { return this._rank; },
+	get: function () { if (this._suit == 0) { return 0; } return this._rank; },
     set: function(value) {
 		if (value < 0 || value > 13) throw new RangeError("Rank must be between 0 (joker) and 13 (king)");
 		this._rank = value;
@@ -57,7 +57,7 @@ Object.defineProperty(CardModel.prototype, 'rank', {
 });
 
 Object.defineProperty(CardModel.prototype, 'suit', {
-	get: function () { return this._suit; },
+	get: function () { if (this._rank == 0) { return 0; } return this._suit; },
     set: function(value) {
 		if (value < 0 || value > 4) throw new RangeError("Suit must be between 0 and 4");
 		this._suit = value;
@@ -67,19 +67,22 @@ Object.defineProperty(CardModel.prototype, 'suit', {
 
 function CardView(model) {
 	this.model = model;
-	this.element = document.createElement("div");
-	this.element.className = "front";
-	this.face = this.element.appendChild(document.createElement("img"));
+	this.element = document.createElement("li");
+	this.element.className = "card";
+	
+	this.front = this.element.appendChild(document.createElement("div"));
+	this.front.className = "front";
+	this.face = this.front.appendChild(document.createElement("img"));
 	this.face.className = "face";
 	
-	this.index1 = {element: this.element.appendChild(document.createElement("div"))};
+	this.index1 = {element: this.front.appendChild(document.createElement("div"))};
 	this.index1.element.className = "index";
 	this.index1.rankDiv = this.index1.element.appendChild(document.createElement("div"));
 	this.index1.rankDiv.className = "rank";
 	this.index1.suitDiv = this.index1.element.appendChild(document.createElement("div"));
 	this.index1.suitDiv.className = "suit";
 	
-	this.index2 = {element: this.element.appendChild(document.createElement("div"))};
+	this.index2 = {element: this.front.appendChild(document.createElement("div"))};
 	this.index2.element.classList.add("index");
 	this.index2.element.classList.add("reverse");
 	this.index2.rankDiv = this.index2.element.appendChild(document.createElement("div"));
@@ -88,13 +91,13 @@ function CardView(model) {
 	this.index2.suitDiv.className = "suit";
 	
 	this.dots = [];
-	var dot = this.element.appendChild(document.createElement("div"));
+	var dot = this.front.appendChild(document.createElement("div"));
 	dot.className = "ace";
 	this.dots.push(dot);
 	for (var c in "ABC") {
 		var cn = "ABC"[c];
 		for (var r = 1; r <= 5; r++) {
-			var dot = this.element.appendChild(document.createElement("div"));
+			var dot = this.front.appendChild(document.createElement("div"));
 			dot.className = "spot" + cn + r;
 			this.dots.push(dot);
 		}
@@ -106,27 +109,9 @@ function CardView(model) {
 	this.update("draggable");
 }
 
-CardView.prototype.update(property) {
+CardView.prototype.update = function (property) {
 	switch (property) {
 		case "suit":
-			if (this.model.rank >= 0 && this.model.rank < 11) {
-				this.face.style.visibility = "hidden";
-				this.face.setAttribute("src", "");
-			} else {
-				this.face.style.visibility = "visible";
-				this.face.setAttribute("src", "http://www.brainjar.com/css/cards/graphics/" + RANK_NAMES[this.model.rank] + ".gif");
-			}
-			for (var i in this.dots) {
-				var dot = this.dots[i];
-				dot.innerHTML = "";
-				if (RANK_DOTS[this.model.rank].indexOf(dot.className) > -1) {
-					dot.innerHTML = SUIT_SYMBOLS[this.model.suit];
-				}
-			}
-			this.index1.rankDiv.innerHTML = this.model.rank > 10 ? RANK_NAMES[this.model.rank].charAt(0).toUpperCase() : RANK_NAMES[this.model.rank];
-			this.index2.rankDiv.innerHTML = this.model.rank > 10 ? RANK_NAMES[this.model.rank].charAt(0).toUpperCase() : RANK_NAMES[this.model.rank];
-			break;
-		case "rank":
 			for (var i in SUIT_NAMES) {
 				if (i > 0) {
 					this.element.classList.remove(SUIT_NAMES[i]);
@@ -134,6 +119,14 @@ CardView.prototype.update(property) {
 			}
 			
 			this.element.classList.add(SUIT_NAMES[this.model.suit]);
+
+			for (var i in this.dots) {
+				var dot = this.dots[i];
+				dot.innerHTML = "";
+				if (RANK_DOTS[this.model.rank].indexOf(dot.className) > -1) {
+					dot.innerHTML = SUIT_SYMBOLS[this.model.suit];
+				}
+			}
 			
 			for (var i in this.dots) {
 				var dot = this.dots[i];
@@ -142,8 +135,33 @@ CardView.prototype.update(property) {
 					dot.innerHTML = SUIT_SYMBOLS[this.model.suit];
 				}
 			}
+			
 			this.index1.suitDiv.innerHTML = SUIT_SYMBOLS[this.model.suit];
 			this.index2.suitDiv.innerHTML = SUIT_SYMBOLS[this.model.suit];
+
+			break;
+		case "rank":
+			if (this.model.rank >= 0 && this.model.rank < 11) {
+				this.face.style.visibility = "hidden";
+				this.face.setAttribute("src", "");
+			} else {
+				this.face.style.visibility = "inherit";
+				this.face.setAttribute("src", "http://www.brainjar.com/css/cards/graphics/" + RANK_NAMES[this.model.rank] + ".gif");
+			}
+			
+			for (var i in this.dots) {
+				var dot = this.dots[i];
+				dot.innerHTML = "";
+				if (RANK_DOTS[this.model.rank].indexOf(dot.className) > -1) {
+					dot.innerHTML = SUIT_SYMBOLS[this.model.suit];
+				}
+			}
+			this.index1.rankDiv.innerHTML = this.model.rank > 10 ? RANK_NAMES[this.model.rank].charAt(0).toUpperCase() : this.model.rank == 1 ? "A" : RANK_NAMES[this.model.rank];
+			this.index2.rankDiv.innerHTML = this.model.rank > 10 ? RANK_NAMES[this.model.rank].charAt(0).toUpperCase() : this.model.rank == 1 ? "A" : RANK_NAMES[this.model.rank];
+			
+			this.index1.suitDiv.innerHTML = SUIT_SYMBOLS[this.model.suit];
+			this.index2.suitDiv.innerHTML = SUIT_SYMBOLS[this.model.suit];
+
 			break;
 		case "up":
 			if (this.model.up) {
@@ -158,6 +176,26 @@ CardView.prototype.update(property) {
 	}
 }
 
+function Card(rank, suit, up, draggable) {
+	this.model = new CardModel(rank, suit, up, draggable);
+	this.view = new CardView(this.model);
+	console.log(this.model);
+	console.log(this.view);
+}
+
+Card.prototype.get = function (property) {
+	return this.model[property];
+}
+
+Card.prototype.update = function (property, value) {
+	this.model[property] = value;
+	this.view.update(property);
+}
+	
+Card.prototype.flip = function () {
+	this.model.flip();
+	this.view.update("up");
+}
 
 
 
@@ -169,8 +207,7 @@ CardView.prototype.update(property) {
 
 
 
-
-
+/*
 
 function Front(rank, suit) {
 	this.element = document.createElement("div");
