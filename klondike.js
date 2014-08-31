@@ -82,7 +82,6 @@ function KlondikeModel() {
 	
 	for (var i = 0; i < this.foundations.length; i++) {
 		this.foundations[i].addHandler("click", function (ev, controller) {
-			alert("Clicked");
 		});
 		
 	}
@@ -137,7 +136,12 @@ KlondikeGame.prototype.setupDraw = function (game) {
 	}}(game));
 }
 
-KlondikeGame.prototype.draw = function (game) {
+KlondikeGame.prototype.draw = function (game) {/*
+	if (game.model.table.model.children.length > 0) {
+		game.model.table.model.children[game.model.table.model.children.length - 1].removeHandler("dragstart");
+		game.model.table.model.children[game.model.table.model.children.length - 1].update("draggable", false);
+	}
+	*/
 	var card = game.model.deck.pop();
 	card.flip();
 	game.model.table.push(card);
@@ -147,6 +151,8 @@ KlondikeGame.prototype.draw = function (game) {
 	}}(game));
 	card.update("draggable", true);
 
+	
+	
 	game.model.deck.view.update("children");
 	game.model.table.view.update("children");
 }
@@ -170,6 +176,33 @@ KlondikeGame.prototype.setupFoundation = function (game, foundation) {
 			}
 		}
 	}}(game));
+	
+	foundation.addHandler("drop", function (game) { return function (ev, stack) {
+		ev.preventDefault();
+		var dragStack = [];
+		for (var i = originStack.model.children.length - 1; i >= dragIndex; i--) {
+			dragStack.push(originStack.pop());
+		}
+		console.log(dragStack);
+		while (dragStack.length > 0) {
+			var card = dragStack.pop();
+			stack.push(card);
+			card.addHandler("dragstart", function (stack, index) {return function (ev, card) {
+					originStack = stack;
+					dragIndex = index;
+					//ev.preventDefault();
+					ev.stopPropagation();
+					//return false;
+			}}(stack, stack.model.children.length - 1));
+			card.update("draggable", true);
+		}
+				
+		stack.view.update("children");
+		originStack.view.update("children");
+		originStack = null;
+		dragIndex = null;	
+	}}(game));
+	
 }
 
 
