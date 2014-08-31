@@ -63,11 +63,11 @@ function View() {
 	}
 }
 
-View.prototype.generate = function (model, element, properties) {
+View.prototype.generate = function (model, element) {
 	this.model = model;
 	this.element = element;
-	for (var i in properties) {
-		this.update(properties[i]);
+	for (var i in this.updaters) {
+		this.update(i);
 	}
 }
 
@@ -138,7 +138,6 @@ function CardView(model) {
 	}
 	
 	this.__proto__.updaters.suit = function (view) {
-		console.log(view);
 		for (var i in SUIT_NAMES) {
 			if (i > 0) {
 				view.element.classList.remove(SUIT_NAMES[i]);
@@ -196,8 +195,7 @@ function CardView(model) {
 		view.element.setAttribute("draggable", view.model.draggable);
 	}
 
-	this.generate(model, element, ["suit", "rank", "up", "draggable"]);
-
+	this.generate(model, element);
 }
 
 CardView.prototype = new View();
@@ -216,21 +214,37 @@ Card.prototype.flip = function () {
 }
 
 // Deck
-
-function DeckView(model) {
-}
-
-function Deck() {
-	var model = [];
-	var view = new DeckView(model);
-	this.generate(model, view);
-
+function DeckModel() {
+	this.children = [];
 	for (var suit = 1; suit <= 4; suit++) {
 		for (var rank = 1; rank < 14; rank++) {
-			this.push(new Card(rank, suit, true, true));
+			this.children.push(new Card(rank, suit, true, true));
+		}
+	}
+}
+
+function DeckView(model) {
+	var element = document.createElement("ul");
+	element.className = "deck";	
+	
+	this.__proto__.updaters.children = function (view) {
+		view.element.innerHTML = "";
+		for (var i = 0; i < view.model.children.length; i++) {
+			view.element.appendChild(view.model.children[i].view.element);
 		}
 	}
 
+	this.generate(model, element);
+
+}
+
+DeckView.prototype = new View();
+
+
+function Deck() {
+	var model = new DeckModel();
+	var view = new DeckView(model);
+	this.generate(model, view);
 }
 
 Deck.prototype = new Controller();
