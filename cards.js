@@ -36,6 +36,42 @@ const RANK_DOTS = [
 	["spotA1", "spotC5"]
 ];
 
+
+// Controller
+function Controller() {
+}
+
+Controller.prototype.generate = function (model, view) {
+	this.model = model;
+	this.view = view;
+}
+
+Controller.prototype.get = function (property) {
+	return this.model[property];
+}
+
+Controller.prototype.update = function (property, value) {
+	this.model[property] = value;
+	this.view.update(property);
+}
+
+// View
+function View() {
+	this.updaters = {};
+	this.update = function (property) {
+		this.updaters[property](this);
+	}
+}
+
+View.prototype.generate = function (model, element, properties) {
+	this.model = model;
+	this.element = element;
+	for (var i in properties) {
+		this.update(properties[i]);
+	}
+}
+
+// Card
 function CardModel(rank, suit, up, draggable) {
 	this.rank = rank;
 	this.suit = suit;
@@ -64,13 +100,11 @@ Object.defineProperty(CardModel.prototype, 'suit', {
 	}
 });
 
-
 function CardView(model) {
-	this.model = model;
-	this.element = document.createElement("li");
-	this.element.className = "card";
+	var element = document.createElement("li");
+	element.className = "card";
 	
-	this.front = this.element.appendChild(document.createElement("div"));
+	this.front = element.appendChild(document.createElement("div"));
 	this.front.className = "front";
 	this.face = this.front.appendChild(document.createElement("img"));
 	this.face.className = "face";
@@ -103,107 +137,108 @@ function CardView(model) {
 		}
 	}
 	
-	this.update("suit");
-	this.update("rank");
-	this.update("up");
-	this.update("draggable");
-}
+	this.__proto__.updaters.suit = function (view) {
+		console.log(view);
+		for (var i in SUIT_NAMES) {
+			if (i > 0) {
+				view.element.classList.remove(SUIT_NAMES[i]);
+			}
+		}
+		
+		view.element.classList.add(SUIT_NAMES[view.model.suit]);
 
-CardView.prototype.update = function (property) {
-	switch (property) {
-		case "suit":
-			for (var i in SUIT_NAMES) {
-				if (i > 0) {
-					this.element.classList.remove(SUIT_NAMES[i]);
-				}
+		for (var i in view.dots) {
+			var dot = view.dots[i];
+			dot.innerHTML = "";
+			if (RANK_DOTS[view.model.rank].indexOf(dot.className) > -1) {
+				dot.innerHTML = SUIT_SYMBOLS[view.model.suit];
 			}
-			
-			this.element.classList.add(SUIT_NAMES[this.model.suit]);
-
-			for (var i in this.dots) {
-				var dot = this.dots[i];
-				dot.innerHTML = "";
-				if (RANK_DOTS[this.model.rank].indexOf(dot.className) > -1) {
-					dot.innerHTML = SUIT_SYMBOLS[this.model.suit];
-				}
-			}
-			
-			for (var i in this.dots) {
-				var dot = this.dots[i];
-				dot.innerHTML = "";
-				if (RANK_DOTS[this.model.rank].indexOf(dot.className) > -1) {
-					dot.innerHTML = SUIT_SYMBOLS[this.model.suit];
-				}
-			}
-			
-			this.index1.suitDiv.innerHTML = SUIT_SYMBOLS[this.model.suit];
-			this.index2.suitDiv.innerHTML = SUIT_SYMBOLS[this.model.suit];
-
-			break;
-		case "rank":
-			if (this.model.rank >= 0 && this.model.rank < 11) {
-				this.face.style.visibility = "hidden";
-				this.face.setAttribute("src", "");
-			} else {
-				this.face.style.visibility = "inherit";
-				this.face.setAttribute("src", "http://www.brainjar.com/css/cards/graphics/" + RANK_NAMES[this.model.rank] + ".gif");
-			}
-			
-			for (var i in this.dots) {
-				var dot = this.dots[i];
-				dot.innerHTML = "";
-				if (RANK_DOTS[this.model.rank].indexOf(dot.className) > -1) {
-					dot.innerHTML = SUIT_SYMBOLS[this.model.suit];
-				}
-			}
-			this.index1.rankDiv.innerHTML = this.model.rank > 10 ? RANK_NAMES[this.model.rank].charAt(0).toUpperCase() : this.model.rank == 1 ? "A" : RANK_NAMES[this.model.rank];
-			this.index2.rankDiv.innerHTML = this.model.rank > 10 ? RANK_NAMES[this.model.rank].charAt(0).toUpperCase() : this.model.rank == 1 ? "A" : RANK_NAMES[this.model.rank];
-			
-			this.index1.suitDiv.innerHTML = SUIT_SYMBOLS[this.model.suit];
-			this.index2.suitDiv.innerHTML = SUIT_SYMBOLS[this.model.suit];
-
-			break;
-		case "up":
-			if (this.model.up) {
-				this.element.classList.add("up");
-				//if (this.front.element)
-				this.element.appendChild(this.front);
-			} else {
-				this.element.classList.remove("up");
-				//if (this.front.element)
-				this.element.removeChild(this.front);
-			}
-			break;
-		case "draggable":
-			this.element.setAttribute("draggable", this.model.draggable);
-			break;
+		}
+		
+		view.index1.suitDiv.innerHTML = SUIT_SYMBOLS[view.model.suit];
+		view.index2.suitDiv.innerHTML = SUIT_SYMBOLS[view.model.suit];
 	}
+	
+	this.__proto__.updaters.rank = function (view) {			
+		if (view.model.rank >= 0 && view.model.rank < 11) {
+			view.face.style.visibility = "hidden";
+			view.face.setAttribute("src", "");
+		} else {
+			view.face.style.visibility = "inherit";
+			view.face.setAttribute("src", "http://www.brainjar.com/css/cards/graphics/" + RANK_NAMES[view.model.rank] + ".gif");
+		}
+		
+		for (var i in view.dots) {
+			var dot = view.dots[i];
+			dot.innerHTML = "";
+			if (RANK_DOTS[view.model.rank].indexOf(dot.className) > -1) {
+				dot.innerHTML = SUIT_SYMBOLS[view.model.suit];
+			}
+		}
+		view.index1.rankDiv.innerHTML = view.model.rank > 10 ? RANK_NAMES[view.model.rank].charAt(0).toUpperCase() : view.model.rank == 1 ? "A" : RANK_NAMES[view.model.rank];
+		view.index2.rankDiv.innerHTML = view.model.rank > 10 ? RANK_NAMES[view.model.rank].charAt(0).toUpperCase() : view.model.rank == 1 ? "A" : RANK_NAMES[view.model.rank];
+		
+		view.index1.suitDiv.innerHTML = SUIT_SYMBOLS[view.model.suit];
+		view.index2.suitDiv.innerHTML = SUIT_SYMBOLS[view.model.suit];
+	}
+	
+	this.__proto__.updaters.up = function (view) {
+		if (view.model.up) {
+			view.element.classList.add("up");
+			view.element.appendChild(view.front);
+		} else {
+			view.element.classList.remove("up");
+			view.element.removeChild(view.front);
+		}
+	}
+	
+	this.__proto__.updaters.draggable = function (view) {
+		view.element.setAttribute("draggable", view.model.draggable);
+	}
+
+	this.generate(model, element, ["suit", "rank", "up", "draggable"]);
+
 }
+
+CardView.prototype = new View();
 
 function Card(rank, suit, up, draggable) {
-	this.model = new CardModel(rank, suit, up, draggable);
-	this.view = new CardView(this.model);
-	console.log(this.model);
-	console.log(this.view);
+	var model = new CardModel(rank, suit, up, draggable);
+	var view = new CardView(model);
+	this.generate(model, view);
 }
 
-Card.prototype.get = function (property) {
-	return this.model[property];
-}
-
-Card.prototype.update = function (property, value) {
-	this.model[property] = value;
-	this.view.update(property);
-}
+Card.prototype = new Controller();
 	
 Card.prototype.flip = function () {
 	this.model.flip();
 	this.view.update("up");
 }
 
+// Deck
 
+function DeckView(model) {
+}
 
+function Deck() {
+	var model = [];
+	var view = new DeckView(model);
+	this.generate(model, view);
 
+	for (var suit = 1; suit <= 4; suit++) {
+		for (var rank = 1; rank < 14; rank++) {
+			this.push(new Card(rank, suit, true, true));
+		}
+	}
+
+}
+
+Deck.prototype = new Controller();
+
+Deck.prototype.push = function (card) {
+	this.model.push(card);
+	this.view.update();
+}
 
 
 
