@@ -123,12 +123,14 @@ body {
 	position: relative;
 }
 */
-ul.deck li { left: 8px;  bottom: 4px; }
-ul.deck li:nth-child(1)  { left: 0;    bottom: 0; }
-ul.deck li:nth-child(2)  { left: 2px;  bottom: 1px; }
-ul.deck li:nth-child(3)  { left: 4px;  bottom: 2px; }
-ul.deck li:nth-child(4)  { left: 6px;  bottom: 3px; }
-ul.deck li:nth-child(5)  { left: 8px;  bottom: 4px; }
+ul.deck li { visibility: hidden; left: 8px;  bottom: 4px; }
+ul.deck li:nth-child(1)  { visibility: visible; left: 0;    bottom: 0; }
+ul.deck li:nth-child(2)  { visibility: visible; left: 2px;  bottom: 1px; }
+ul.deck li:nth-child(3)  { visibility: visible; left: 4px;  bottom: 2px; }
+ul.deck li:nth-child(4)  { visibility: visible; left: 6px;  bottom: 3px; }
+ul.deck li:nth-child(5)  { visibility: visible; left: 8px;  bottom: 4px; }
+ul.deck li:last-child { visibility: visible; }
+
 
 .pile li {
 	height: 1em;
