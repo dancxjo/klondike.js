@@ -153,38 +153,6 @@
 						pile.children[i].draggable = pile.children[i].up;						
 					}
 				}
-				/*
-				piles[a].view.updaters.children = function (view) {
-					view.element.innerHTML = "";
-					var metapile = view.element.appendChild(document.createElement("li"));
-					for (var i = 0; i < view.controller.children.length; i++) {
-						if (!view.controller.children[i].up) {
-							var li = view.element.appendChild(document.createElement("li"));
-							li.classList.add("down");
-							li.appendChild(view.controller.children[i].element);
-						} else {
-							metapile.classList.add("up");
-							metapile.setAttribute("draggable", true);
-							metapile.appendChild(view.controller.children[i].element);
-							metapile.ondragstart = (function (index, stack) { return function (ev) {
-								
-								originStack = stack;
-								dragIndex = index;
-								ev.stopPropagation();								
-							}})(i, view.controller);
-							
-							if (i < view.model.children.length - 1) {
-								var subpile = view.element.appendChild(document.createElement("ul"));
-								metapile.appendChild(subpile);
-								metapile = subpile.appendChild(document.createElement("li"));
-							} else {
-								
-							}
-						
-						}
-					}
-				}
-				*/
 			}
 
 			for (var a = 0; a < 7; a++) {
