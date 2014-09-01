@@ -43,7 +43,8 @@ CardModel.extends(Model);
 
 function CardView(controller) {
 	this.baseClass.call(this, controller);
-	var element = this.element = document.createElement("div");
+	var element = document.createElement("div");
+	this.element = element;
 	this.element.className = "card";
 
 	this.front = element.appendChild(document.createElement("div"));
@@ -126,10 +127,10 @@ function CardView(controller) {
 	this.updaters.up = function (view) {
 		if (view.controller.up) {
 			view.element.classList.add("up");
-			view.element.appendChild(view.front);
+			//view.element.appendChild(view.front);
 		} else {
 			view.element.classList.remove("up");
-			view.element.removeChild(view.front);
+			//view.element.removeChild(view.front);
 		}
 	}
 		
@@ -160,4 +161,12 @@ Card.extends(Controller);
 
 Card.prototype.flip = function () {
 	this.up = !this.up;
+}
+
+Card.prototype.remove = function () {
+	if (this.stack && this.stack.children.indexOf(this) > -1) {
+		this.stack.children.splice(this.stack.children.indexOf(this), 1);
+		this.stack.view.update("children");
+		this.stack = null;
+	}
 }

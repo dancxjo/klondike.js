@@ -15,6 +15,25 @@
 			deck.generateDeck();
 			deck.shuffle();
 			
+			for (var i = 0; i < deck.children.length; i++) {
+				deck.children[i].addHandler("dragstart", function (ev, card) {
+					dragStack = [];
+					
+					if (card.stack.dragType == "series") {
+						for (var i = card.stack.children.indexOf(card); i > -1 && i < card.stack.children.length; i++) {
+							dragStack.push(card.stack.children[i]);
+						}
+					} else {
+						var i = card.stack.children.indexOf(card);
+						if (!card.stack.topOnly || card.stack.topOnly && i == card.stack.children.length - 1) {
+							dragStack.push(card);
+						}
+					}
+					
+				});
+				deck.children[i].draggable = true;
+			}
+			
 			var table = new Stack("table");
 			
 			deck.addHandler("click", function (ev, deck) {
@@ -30,7 +49,20 @@
 					}
 				}
 			});
+			/*
+			table.element.setAttribute("draggable", true);
 			
+			table.addHandler("dragstart", function (ev, table) {
+				dragStack = [];
+				if (table.children.length > 0) {
+					var card = table.children[table.children.length - 1];
+					dragStack.push(card);
+					ev.dataTransfer.setDragImage(card, 0, 0);
+					ev.preventDefault();
+					return false;
+				}
+			});
+			*/
 			var foundations = [
 				new Stack("foundation"),
 				new Stack("foundation"),
@@ -39,9 +71,24 @@
 			];
 			
 			for (var i = 0; i < foundations.length; i++) {
+				foundations[i].addHandler("dragover", function (ev, stack) {
+					if (dragStack.length == 1) {
+						var baseRank = 0;
+						if (stack.children.length > 0) {
+							baseRank = stack.children[0].rank;
+						}
+						if (baseRank + 1 == dragStack[0].rank) {
+							ev.preventDefault();
+							return false;
+						}
+					}
+				});
+				
 				foundations[i].addHandler("drop", function (ev, stack) {
-					for (var i = 0; i < dragStack.length; i++) {
-						
+					while (dragStack.length) {
+						var card = dragStack.shift();
+						card.remove();
+						stack.push(card);
 					}
 				});
 				document.body.appendChild(foundations[i].element);
