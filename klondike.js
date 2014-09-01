@@ -1,3 +1,7 @@
+Card.prototype.ondrag = function (ev, card) {
+	
+}
+
 function KlondikeModel() {
 	this.start = Date.now();
 	this.score = 0;
