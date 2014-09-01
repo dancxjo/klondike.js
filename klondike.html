@@ -22,11 +22,13 @@
 					if (card.stack.dragType == "series") {
 						for (var i = card.stack.children.indexOf(card); i > -1 && i < card.stack.children.length; i++) {
 							dragStack.push(card.stack.children[i]);
+							ev.dataTransfer.setData("text/plain", "a card");
 						}
 					} else {
 						var i = card.stack.children.indexOf(card);
 						if (!card.stack.topOnly || card.stack.topOnly && i == card.stack.children.length - 1) {
 							dragStack.push(card);
+							ev.dataTransfer.setData("text/plain", "a card");
 						}
 					}
 					
@@ -86,11 +88,14 @@
 				});
 				
 				foundations[i].addHandler("drop", function (ev, stack) {
+					var dummy = ev.dataTransfer.getData("text/plain");
 					while (dragStack.length) {
 						var card = dragStack.shift();
 						card.remove();
 						stack.push(card);
 					}
+					ev.preventDefault();
+					ev.stopPropagation();
 				});
 				
 				document.body.appendChild(foundations[i].element);
@@ -132,11 +137,14 @@
 				});
 				
 				piles[a].addHandler("drop", function (ev, stack) {
+					var dummy = ev.dataTransfer.getData("text/plain");
 					while (dragStack.length) {
 						var card = dragStack.shift();
 						card.remove();
 						stack.push(card);
 					}
+					ev.preventDefault();
+					ev.stopPropagation();
 				});
 
 				piles[a].dragType = "series";
