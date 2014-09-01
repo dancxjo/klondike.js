@@ -77,9 +77,12 @@
 						if (stack.children.length > 0) {
 							baseRank = stack.children[0].rank;
 						}
+		
 						if (baseRank + 1 == dragStack[0].rank) {
-							ev.preventDefault();
-							return false;
+							if (stack.children.length > 0 && stack.children[0].suit == dragStack[0].suit) {
+								ev.preventDefault();
+								return false;
+							}
 						}
 					}
 				});
