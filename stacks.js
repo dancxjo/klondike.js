@@ -41,7 +41,7 @@ Stack.prototype.shuffle = function () {
 		this.children[i] = this.children[j];
 		this.children[j] = a;
 	}
-	this.view.update("children");
+	this.update("children");
 }
 
 Stack.prototype.generateDeck = function () {
@@ -56,19 +56,19 @@ Stack.prototype.generateDeck = function () {
 Stack.prototype.pop = function () {
 	var card = this.children.pop();
 	card.stack = null;
-	this.view.update("children");
+	this.update("children");
 	return card;
 }
 
 Stack.prototype.push = function (card) {
 	this.children.push(card);
 	card.stack = this;
-	this.view.update("children");
+	this.update("children");
 }
 
 Stack.prototype.flip = function () {
 	for (var i = 0; i < this.children.length; i++) {
 		this.children[i].flip();
 	}
-	this.view.update("children");
+	this.update("children");
 }

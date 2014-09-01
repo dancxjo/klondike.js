@@ -24,12 +24,22 @@ function Controller(modelConstructor, viewConstructor) {
 		if (!(property in this)) {
 			Object.defineProperty(this.__proto__, property, {
 				get: function (prop) { return function () { return this.model.values[prop]; }}(property),
-				set: function (prop) { return function (value) { this.model.values[prop] = value; this.view.update(prop); }}(property)
+				set: function (prop) { return function (value) {
+					this.model.values[prop] = value; 
+					this.update(prop); 
+				}}(property)
 			});
 		}
 	}
 	this.handlers = {};
+	this.updaters = {};
 }
+
+Controller.prototype.update = function (property) {
+	this.view.update(property); 
+	if (this.updaters[property]) this.updaters[property](this);
+}
+
 
 Controller.prototype.handleEvent = function (ev) {
 	return this.handlers[ev.type](ev, this);

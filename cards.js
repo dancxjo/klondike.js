@@ -161,12 +161,23 @@ Card.extends(Controller);
 
 Card.prototype.flip = function () {
 	this.up = !this.up;
+	if (this.stack) {
+		this.stack.update("children");
+	}
+}
+
+Card.prototype.getColor = function () {
+	switch (this.suit) {
+		case 2: return "red";
+		case 3: return "red";
+		default: return "black";
+	}
 }
 
 Card.prototype.remove = function () {
 	if (this.stack && this.stack.children.indexOf(this) > -1) {
 		this.stack.children.splice(this.stack.children.indexOf(this), 1);
-		this.stack.view.update("children");
+		this.stack.update("children");
 		this.stack = null;
 	}
 }
