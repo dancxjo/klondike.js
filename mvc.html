@@ -4,11 +4,15 @@
 		<meta charset="UTF-8">
 		<link rel="stylesheet" type="text/css" href="cards.css" media="screen" />
 		<script src="mvc.js"></script>
+		<script src="cards.js"></script>
 	</head>
 	<body>
 		<script>
-			var card = new Card(12, 2, true);
+			var card = new Card(2, 12, false);
+			card.flip();
+			console.log(card);
 			document.body.appendChild(card.element);
+			card.addHandler("click", function (ev, card) {card.flip();});
 		</script>
 	</body>
 </html>

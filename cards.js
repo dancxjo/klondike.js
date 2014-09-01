@@ -1,6 +1,3 @@
-var originStack = null;
-var dragIndex = null;
-
 const RANK_NAMES = ["joker", "ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "jack", "queen", "king"];
 const SUIT_NAMES = ["joker", "spades", "hearts", "diamonds", "clubs"];
 const SUIT_SYMBOLS = ["*", "&spades;", "&hearts;", "&diams;", "&clubs;"];
@@ -37,107 +34,18 @@ const RANK_DOTS = [
 	["spotA1", "spotC5"]
 ];
 
+function CardModel(controller) {
+	this.baseClass.call(this, controller);
+	this.properties = ["rank", "suit", "up", "draggable"];
+} 
 
-// Controller
-function Controller() {
-}
+CardModel.extends(Model);
 
-Controller.prototype.generate = function (model, view, handlers) {
-	this.model = model;
-	this.handlers = handlers;
-	this.view = view;
-	this.model.controller = this;
-	this.view.controller = this;
-	for (var i in this.handlers) {
-		this.view.element.addEventListener(i, this, false);
-	}
-}
+function CardView(controller) {
+	this.baseClass.call(this, controller);
+	var element = this.element = document.createElement("div");
+	this.element.className = "card";
 
-Controller.prototype.get = function (property) {
-	return this.model[property];
-}
-
-Controller.prototype.update = function (property, value) {
-	this.model[property] = value;
-	this.view.update(property);
-}
-
-Controller.prototype.handleEvent = function (ev) {
-	return this.handlers[ev.type](ev, this);
-}
-
-Controller.prototype.addHandler = function (name, handler) {
-	if (this.handlers[name]) {
-		this.removeHandler(name);
-	}
-	this.handlers[name] = handler;
-	this.view.element.addEventListener(name, this, false);
-}
-
-Controller.prototype.removeHandler = function (name) {
-	this.view.element.removeEventListener(name, this.handlers[name]);
-	delete this.handlers[name];
-}
-
-// View
-function View() {
-}
-
-View.prototype.update = function (property) {
-	this.updaters[property](this);
-}
-
-
-View.prototype.generate = function (model, element, updaters) {
-	this.model = model;
-	this.element = element;
-	this.updaters = updaters;
-	for (var i in this.updaters) {
-		this.update(i);
-	}
-}
-
-// Card
-function CardModel(rank, suit, up, draggable) {
-	this.rank = rank;
-	this.suit = suit;
-	this.up = up;
-	this.draggable = draggable;
-}
-
-CardModel.prototype.flip = function () {
-	this.up = !this.up;
-}
-
-// Getters an setters for CardModel
-Object.defineProperty(CardModel.prototype, 'rank', {
-	get: function () { if (this._suit == 0) { return 0; } return this._rank; },
-    set: function(value) {
-		if (value < 0 || value > 13) throw new RangeError("Rank must be between 0 (joker) and 13 (king)");
-		this._rank = value;
-	}
-});
-
-Object.defineProperty(CardModel.prototype, 'suit', {
-	get: function () { if (this._rank == 0) { return 0; } return this._suit; },
-    set: function(value) {
-		if (value < 0 || value > 4) throw new RangeError("Suit must be between 0 and 4");
-		this._suit = value;
-	}
-});
-
-Object.defineProperty(CardModel.prototype, 'color', {
-	get: function () { switch(this.suit) {
-		case 2: return "red";
-		case 3: return "red";
-	}; return "black";}
-});
-
-
-function CardView(model) {
-	var element = document.createElement("div");
-	element.className = "card";
-	
 	this.front = element.appendChild(document.createElement("div"));
 	this.front.className = "front";
 	this.face = this.front.appendChild(document.createElement("img"));
@@ -170,55 +78,53 @@ function CardView(model) {
 			this.dots.push(dot);
 		}
 	}
-	
-	var updaters = {};
-	
-	updaters.suit = function (view) {
+		
+	this.updaters.suit = function (view) {
 		for (var i in SUIT_NAMES) {
 			if (i > 0) {
 				view.front.classList.remove(SUIT_NAMES[i]);
 			}
 		}
 		
-		view.front.classList.add(SUIT_NAMES[view.model.suit]);
+		view.front.classList.add(SUIT_NAMES[view.controller.suit]);
 
 		for (var i in view.dots) {
 			var dot = view.dots[i];
 			dot.innerHTML = "";
-			if (RANK_DOTS[view.model.rank].indexOf(dot.className) > -1) {
-				dot.innerHTML = SUIT_SYMBOLS[view.model.suit];
+			if (RANK_DOTS[view.controller.rank].indexOf(dot.className) > -1) {
+				dot.innerHTML = SUIT_SYMBOLS[view.controller.suit];
 			}
 		}
 		
-		view.index1.suitDiv.innerHTML = SUIT_SYMBOLS[view.model.suit];
-		view.index2.suitDiv.innerHTML = SUIT_SYMBOLS[view.model.suit];
+		view.index1.suitDiv.innerHTML = SUIT_SYMBOLS[view.controller.suit];
+		view.index2.suitDiv.innerHTML = SUIT_SYMBOLS[view.controller.suit];
 	}
 	
-	updaters.rank = function (view) {			
-		if (view.model.rank >= 0 && view.model.rank < 11) {
+	this.updaters.rank = function (view) {			
+		if (view.controller.rank >= 0 && view.controller.rank < 11) {
 			view.face.style.visibility = "hidden";
 			view.face.setAttribute("src", "");
 		} else {
 			view.face.style.visibility = "inherit";
-			view.face.setAttribute("src", "http://www.brainjar.com/css/cards/graphics/" + RANK_NAMES[view.model.rank] + ".gif");
+			view.face.setAttribute("src", "http://www.brainjar.com/css/cards/graphics/" + RANK_NAMES[view.controller.rank] + ".gif");
 		}
 		
 		for (var i in view.dots) {
 			var dot = view.dots[i];
 			dot.innerHTML = "";
-			if (RANK_DOTS[view.model.rank].indexOf(dot.className) > -1) {
-				dot.innerHTML = SUIT_SYMBOLS[view.model.suit];
+			if (RANK_DOTS[view.controller.rank].indexOf(dot.className) > -1) {
+				dot.innerHTML = SUIT_SYMBOLS[view.controller.suit];
 			}
 		}
-		view.index1.rankDiv.innerHTML = view.model.rank > 10 ? RANK_NAMES[view.model.rank].charAt(0).toUpperCase() : view.model.rank == 1 ? "A" : RANK_NAMES[view.model.rank];
-		view.index2.rankDiv.innerHTML = view.model.rank > 10 ? RANK_NAMES[view.model.rank].charAt(0).toUpperCase() : view.model.rank == 1 ? "A" : RANK_NAMES[view.model.rank];
+		view.index1.rankDiv.innerHTML = view.controller.rank > 10 ? RANK_NAMES[view.controller.rank].charAt(0).toUpperCase() : view.controller.rank == 1 ? "A" : RANK_NAMES[view.controller.rank];
+		view.index2.rankDiv.innerHTML = view.controller.rank > 10 ? RANK_NAMES[view.controller.rank].charAt(0).toUpperCase() : view.controller.rank == 1 ? "A" : RANK_NAMES[view.controller.rank];
 		
-		view.index1.suitDiv.innerHTML = SUIT_SYMBOLS[view.model.suit];
-		view.index2.suitDiv.innerHTML = SUIT_SYMBOLS[view.model.suit];
+		view.index1.suitDiv.innerHTML = SUIT_SYMBOLS[view.controller.suit];
+		view.index2.suitDiv.innerHTML = SUIT_SYMBOLS[view.controller.suit];
 	}
 	
-	updaters.up = function (view) {
-		if (view.model.up) {
+	this.updaters.up = function (view) {
+		if (view.controller.up) {
 			view.element.classList.add("up");
 			view.element.appendChild(view.front);
 		} else {
@@ -226,116 +132,32 @@ function CardView(model) {
 			view.element.removeChild(view.front);
 		}
 	}
-	
-	updaters.draggable = function (view) {
-		view.element.setAttribute("draggable", view.model.draggable);
+		
+	this.updaters.draggable = function (view) {
+		view.element.setAttribute("draggable", view.controller.draggable);
 	}
 
-	this.generate(model, element, updaters);
-}
 
-CardView.prototype = new View();
-
-function Card(rank, suit, up, draggable) {
-	var model = new CardModel(rank, suit, up, draggable);
-	var view = new CardView(model);
-	var handlers = {};
-	/*
-	handlers.click = function (ev, controller) {
-		controller.flip();
-	}
-	*/
-	this.generate(model, view, handlers);
-}
-
-Card.prototype = new Controller();
 	
+}
+
+CardView.extends(View);
+
+function Card(suit, rank, up) {
+	this.baseClass.call(this, CardModel, CardView);
+	// Define initial stub values
+	this.model.values.rank = rank;
+	this.model.values.suit = suit;
+	this.model.values.up = up;
+	this.model.values.draggable = false;
+	this.suit = suit;
+	this.rank = rank;
+	this.up = up;
+	this.draggable = false;
+}
+
+Card.extends(Controller);
+
 Card.prototype.flip = function () {
-	this.model.flip();
-	this.view.update("up");
-}
-
-// Stack
-function StackModel(className) {
-	this.children = [];
-	this.className = className ? className : "deck";
-}
-
-StackModel.prototype.generate = function () {
-	for (var suit = 1; suit <= 4; suit++) {
-		for (var rank = 1; rank < 14; rank++) {
-			var card = new Card(rank, suit, false, false);
-			this.children.push(card);
-		}
-	}
-}
-
-StackModel.prototype.shuffle = function () {
-	for (var i = this.children.length - 1; i > 0; i--) {
-		var j = Math.floor(Math.random() * (i + 1));
-		var a = this.children[i];
-		this.children[i] = this.children[j];
-		this.children[j] = a;
-	}
-}
-
-function StackView(model) {
-	var element = document.createElement("ul");
-	element.className = model.className;	
-	var updaters = {};
-	updaters.children = function (view) {
-		view.element.innerHTML = "";
-		for (var i = 0; i < view.model.children.length; i++) {
-			var li = view.element.appendChild(document.createElement("li"));
-			if (!view.model.children[i].model.up) {
-				li.classList.add("down");
-			}
-			li.appendChild(view.model.children[i].view.element);
-		}
-	}
-
-	this.generate(model, element, updaters);
-}
-
-StackView.prototype = new View();
-
-function Stack(className) {
-	var model = new StackModel(className);
-	var view = new StackView(model);
-	var handlers = {
-		drop: function (ev, stack) {
-			ev.preventDefault();
-			var dragStack = [];
-			for (var i = originStack.model.children.length - 1; i >= dragIndex; i--) {
-				dragStack.push(originStack.pop());
-			}
-			console.log(dragStack);
-			while (dragStack.length > 0) {
-				stack.push(dragStack.pop());
-			}
-			stack.view.update("children");
-			originStack.view.update("children");
-			originStack = null;
-			dragIndex = null;
-		}
-	};
-	this.generate(model, view, handlers);
-}
-
-Stack.prototype = new Controller();
-
-Stack.prototype.push = function (card) {
-	this.model.children.push(card);
-	this.view.update("children");
-}
-
-Stack.prototype.pop = function () {
-	var card = this.model.children.pop();
-	this.view.update("children");
-	return card;
-}
-
-Stack.prototype.shuffle = function () {
-	this.model.shuffle();
-	this.view.update("children");
+	this.up = !this.up;
 }
