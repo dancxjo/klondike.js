@@ -9,13 +9,47 @@
 	</head>
 	<body>
 		<script>
-			var deck = new Deck();
+			var dragStack = [];
+		
+			var deck = new Stack();
+			deck.generateDeck();
 			deck.shuffle();
-			deck.flip();
+			
+			var table = new Stack("table");
+			
+			deck.addHandler("click", function (ev, deck) {
+				if (deck.children.length > 0) {
+					var card = deck.pop();
+					card.flip();
+					table.push(card);
+				} else {
+					while (table.children.length > 0) {
+						var card = table.pop();
+						card.flip();
+						deck.push(card);
+					}
+				}
+			});
+			
+			var foundations = [
+				new Stack("foundation"),
+				new Stack("foundation"),
+				new Stack("foundation"),
+				new Stack("foundation")
+			];
+			
+			for (var i = 0; i < foundations.length; i++) {
+				foundations[i].addHandler("drop", function (ev, stack) {
+					for (var i = 0; i < dragStack.length; i++) {
+						
+					}
+				});
+				document.body.appendChild(foundations[i].element);
+			}
+			
+			document.body.appendChild(table.element);
 			document.body.appendChild(deck.element);
-			var card = deck.pop();
-			//document.body.appendChild(card.element);
-			//card.addHandler("click", function (ev, card) {card.flip();});
+
 		</script>
 	</body>
 </html>

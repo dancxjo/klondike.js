@@ -1,11 +1,11 @@
-function DeckModel(controller) {
+function StackModel(controller) {
 	this.baseClass.call(this, controller);
 	this.properties = ["children"];
 } 
 
-DeckModel.extends(Model);
+StackModel.extends(Model);
 
-function DeckView(controller) {
+function StackView(controller) {
 	this.baseClass.call(this, controller);
 	var element = this.element = document.createElement("ul");
 	this.element.className = "deck";
@@ -22,23 +22,19 @@ function DeckView(controller) {
 	}
 }
 
-DeckView.extends(View);
+StackView.extends(View);
 
-function Deck() {
-	this.baseClass.call(this, DeckModel, DeckView);
-	this.model.values.children = [];
-	for (var suit = 1; suit <= 4; suit++) {
-		for (var rank = 1; rank < 14; rank++) {
-			var card = new Card(suit, rank, false, false);
-			this.push(card);
-		}
+function Stack(className) {
+	this.baseClass.call(this, StackModel, StackView);
+	if (className) {
+		this.element.className = className;
 	}
-
+	this.model.values.children = [];
 }
 
-Deck.extends(Controller);
+Stack.extends(Controller);
 
-Deck.prototype.shuffle = function () {
+Stack.prototype.shuffle = function () {
 	for (var i = this.children.length - 1; i > 0; i--) {
 		var j = Math.floor(Math.random() * (i + 1));
 		var a = this.children[i];
@@ -48,18 +44,29 @@ Deck.prototype.shuffle = function () {
 	this.view.update("children");
 }
 
-Deck.prototype.pop = function () {
+Stack.prototype.generateDeck = function () {
+	for (var suit = 1; suit <= 4; suit++) {
+		for (var rank = 1; rank < 14; rank++) {
+			var card = new Card(suit, rank, false, false);
+			this.push(card);
+		}
+	}
+}
+
+Stack.prototype.pop = function () {
 	var card = this.children.pop();
+	card.stack = null;
 	this.view.update("children");
 	return card;
 }
 
-Deck.prototype.push = function (card) {
+Stack.prototype.push = function (card) {
 	this.children.push(card);
+	card.stack = this;
 	this.view.update("children");
 }
 
-Deck.prototype.flip = function () {
+Stack.prototype.flip = function () {
 	for (var i = 0; i < this.children.length; i++) {
 		this.children[i].flip();
 	}

@@ -1,14 +1,14 @@
-function DeckModel(controller) {
+function FoundationModel(controller) {
 	this.baseClass.call(this, controller);
 	this.properties = ["children"];
 } 
 
-DeckModel.extends(Model);
+FoundationModel.extends(Model);
 
-function DeckView(controller) {
+function FoundationView(controller) {
 	this.baseClass.call(this, controller);
 	var element = this.element = document.createElement("ul");
-	this.element.className = "deck";
+	this.element.className = "foundation";
 
 	this.updaters.children = function (view) {
 		view.element.innerHTML = "";
@@ -22,23 +22,16 @@ function DeckView(controller) {
 	}
 }
 
-DeckView.extends(View);
+FoundationView.extends(View);
 
-function Deck() {
-	this.baseClass.call(this, DeckModel, DeckView);
+function Foundation() {
+	this.baseClass.call(this, FoundationModel, FoundationView);
 	this.model.values.children = [];
-	for (var suit = 1; suit <= 4; suit++) {
-		for (var rank = 1; rank < 14; rank++) {
-			var card = new Card(suit, rank, false, false);
-			this.push(card);
-		}
-	}
-
 }
 
-Deck.extends(Controller);
+Foundation.extends(Controller);
 
-Deck.prototype.shuffle = function () {
+Foundation.prototype.shuffle = function () {
 	for (var i = this.children.length - 1; i > 0; i--) {
 		var j = Math.floor(Math.random() * (i + 1));
 		var a = this.children[i];
@@ -48,20 +41,18 @@ Deck.prototype.shuffle = function () {
 	this.view.update("children");
 }
 
-Deck.prototype.pop = function () {
+Foundation.prototype.pop = function () {
 	var card = this.children.pop();
-	card.stack = null;
 	this.view.update("children");
 	return card;
 }
 
-Deck.prototype.push = function (card) {
+Foundation.prototype.push = function (card) {
 	this.children.push(card);
-	card.stack = this;
 	this.view.update("children");
 }
 
-Deck.prototype.flip = function () {
+Foundation.prototype.flip = function () {
 	for (var i = 0; i < this.children.length; i++) {
 		this.children[i].flip();
 	}

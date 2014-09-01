@@ -6,7 +6,7 @@ function KlondikeModel() {
 	this.start = Date.now();
 	this.score = 0;
 	
-	this.deck = new Stack();
+	this.deck = new Deck();
 	this.deck.model.generate();
 	this.deck.shuffle();
 		
