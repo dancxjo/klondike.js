@@ -5,14 +5,17 @@
 		<link rel="stylesheet" type="text/css" href="cards.css" media="screen" />
 		<script src="mvc.js"></script>
 		<script src="cards.js"></script>
+		<script src="stacks.js"></script>
 	</head>
 	<body>
 		<script>
-			var card = new Card(2, 12, false);
-			card.flip();
-			console.log(card);
-			document.body.appendChild(card.element);
-			card.addHandler("click", function (ev, card) {card.flip();});
+			var deck = new Deck();
+			deck.shuffle();
+			deck.flip();
+			document.body.appendChild(deck.element);
+			var card = deck.pop();
+			//document.body.appendChild(card.element);
+			//card.addHandler("click", function (ev, card) {card.flip();});
 		</script>
 	</body>
 </html>

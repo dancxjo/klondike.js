@@ -21,11 +21,12 @@ function Controller(modelConstructor, viewConstructor) {
 	}
 	if (this.model) for (var i = 0; i < this.model.properties.length; i++) {
 		var property = this.model.properties[i];
-		Object.defineProperty(this.__proto__, property, {
-			get: function (prop) { return function () { return this.model.values[prop]; }}(property),
-			set: function (prop) { return function (value) { this.model.values[prop] = value; this.view.update(prop); }}(property)
-		});
-
+		if (!(property in this)) {
+			Object.defineProperty(this.__proto__, property, {
+				get: function (prop) { return function () { return this.model.values[prop]; }}(property),
+				set: function (prop) { return function (value) { this.model.values[prop] = value; this.view.update(prop); }}(property)
+			});
+		}
 	}
 	this.handlers = {};
 }
