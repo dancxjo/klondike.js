@@ -46,7 +46,7 @@ function CardView(controller) {
 	var element = document.createElement("div");
 	this.element = element;
 	this.element.className = "card";
-
+	
 	this.front = element.appendChild(document.createElement("div"));
 	this.front.className = "front";
 	this.face = this.front.appendChild(document.createElement("img"));
@@ -79,7 +79,7 @@ function CardView(controller) {
 			this.dots.push(dot);
 		}
 	}
-		
+	
 	this.updaters.suit = function (view) {
 		for (var i in SUIT_NAMES) {
 			if (i > 0) {
@@ -137,9 +137,6 @@ function CardView(controller) {
 	this.updaters.draggable = function (view) {
 		view.element.setAttribute("draggable", view.controller.draggable);
 	}
-
-
-	
 }
 
 CardView.extends(View);
