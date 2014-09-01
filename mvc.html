@@ -75,11 +75,11 @@
 					if (dragStack.length == 1) {
 						var baseRank = 0;
 						if (stack.children.length > 0) {
-							baseRank = stack.children[0].rank;
+							baseRank = stack.children[stack.children.length - 1].rank;
 						}
-		
+								
 						if (baseRank + 1 == dragStack[0].rank) {
-							if (stack.children.length > 0 && stack.children[0].suit == dragStack[0].suit) {
+							if (stack.children.length == 0 || stack.children[stack.children.length - 1].suit == dragStack[0].suit) {
 								ev.preventDefault();
 								return false;
 							}
