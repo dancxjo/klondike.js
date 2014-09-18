@@ -1,3 +1,13 @@
+function Card(rank, suit, up) {
+    this.rank = rank;
+    this.suit = suit;
+    this.up = !!up;
+}
+
+Card.prototype.flip = function () {
+    this.up = !this.up;
+}
+
 angular.module('app', ['ngDragDrop'])
     .filter('suitSymbol', function () {
         return function (suitName) {
@@ -111,158 +121,102 @@ angular.module('app', ['ngDragDrop'])
             };
     }])
     .controller('GameCtrl', function ($scope, $timeout) {
-        $scope.foobar = "The angry fox";
-        $scope.foundations = [];
-        for (var i = 0; i < 4; i++) {
-            $scope.foundations[i] = {};
-        }
-        $scope.piles = [];
-        for (var i = 0; i < 7; i++) {
-            $scope.piles[i] = {cards:[]};
-        }
-
-        $scope.definedPiles = 0;
-
-        $scope.$on("draw", function (ev, args) {
-            $scope.$broadcast("discard", args);
-        });
-
-        $scope.$on("noCardsInDeck", function (ev) {
-            $scope.$broadcast("pickUpTable");
-        });
-
-        $scope.$on("dropTable", function (ev, tempCards) {
-            $scope.$broadcast("gatherCards", tempCards);
-        });
-
-        $scope.$on("registerPile", function (ev, args) {
-            console.log(args[0]);
-            $scope.piles[args[0]].scope = ev.targetScope;
-            console.log($scope.piles);
-
-            if (++$scope.definedPiles == 7) {
-                for (var i in $scope.piles) {
-                    var cards = $scope.piles[i].cards;
-                    while (cards.length > 0) {
-                        var card = cards.pop();
-                        //card.up = true;
-                        $scope.piles[i].scope.cards.push(card);
-                    }
-                }
-            }
-
-            console.log($scope.definedPiles);
-        });
-
-        $scope.$on("dealCard", function (ev, args) {
-            // Hold the dealt cards until all the piles are registered
-            if (!$scope.piles[args[0]].cards) $scope.piles[args[0]].cards = [];
-            $scope.piles[args[0]].cards.push(args[1]);
-            //console.log($scope);
-        });
-    })
-    .controller('DeckCtrl', function ($scope, $element) {
-        if (!$scope.cards) {
-            $scope.cards = [];
-        }
-
-        var cards = $scope.cards;
-
-        var suits = ["hearts", "diamonds", "clubs", "spades"];
+        $scope.deck = [];
+        
         var ranks = ["ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "jack", "queen", "king"];
+        var suits = ["diamonds", "spades", "hearts", "clubs"];
+        
         for (var s in suits) {
             for (var r in ranks) {
-                var card = {
-                    rank: ranks[r],
-                    suit: suits[s],
-                    up: false
-                };
-                $scope.cards.push(card);
+                $scope.deck.push(new Card(ranks[r], suits[s]));
+            }
+        }
+    
+        $scope.table = [];
+        
+        $scope.currentFoundation = 0;
+        $scope.nextFoundation = function () {
+            $scope.currentFoundation++;
+        }
+        $scope.foundations = [];
+        for (var i = 0; i < 4; i++) {
+            $scope.foundations[i] = [];
+        }
+        
+        $scope.currentPile = 0;
+        $scope.nextPile = function () {
+            $scope.currentPile++;
+        }
+
+        $scope.piles = [];
+        for (var i = 0; i < 7; i++) {
+            $scope.piles[i] = [];
+        }
+    
+        for (var a = 0; a < 7; a++) {
+            for (var b = a; b < 7; b++) {
+                var card = $scope.deck.pop();
+                if (a == b) card.flip();
+                $scope.piles[b].push(card);
             }
         }
 
         $scope.draw = function () {
-            if ($scope.cards.length > 0) {
-                var card = $scope.cards.pop();
-                $scope.$emit("draw", [card]);
+            if ($scope.deck.length > 0) {
+                var card = $scope.deck.pop();
+                card.flip();
+                $scope.table.push(card);
             } else {
-                $scope.$emit("noCardsInDeck");
-            }
-            $scope.$apply();
-        }
-
-        $scope.deal = function () {
-            for (var a = 0; a < 7; a++) {
-                for (var b = a; b < 7; b++) {
-                    var card = $scope.cards.pop();
-                    if (a === b) card.up = true;
-                    $scope.$emit("dealCard", [b, card]);
+                while ($scope.table.length > 0) {
+                    var card = $scope.table.pop();
+                    card.flip();
+                    $scope.deck.push(card);
                 }
             }
         }
+    
+    })
+    .controller('DeckCtrl', function ($scope, $element) {
+        if ($scope.deck) {
+            $scope.cards = $scope.deck;
+        } else {
+            $scope.cards = [];
+        }
 
-        $scope.deal();
-
-        $element.bind("click", function (ev) {
-            $scope.draw();
-        });
-
-        $scope.$on('gatherCards', function (ev, tempCards) {
-            while (tempCards.length > 0) {
-                var card = tempCards.shift();
-                card.up = false;
-                cards.push(card);
-            }
-            $scope.$apply();
-        });
+        var cards = $scope.cards;
     })
     .controller('TableCtrl', function ($scope, $element) {
-        if (!$scope.cards) {
+        if ($scope.table) {
+            $scope.cards = $scope.table;
+        } else {
             $scope.cards = [];
         }
 
         var cards = $scope.cards;
-
+    
         $scope.pop = function () {
-            var card = $scope.cards.pop();
-            //$scope.$apply();
+            var card = cards.pop();
             return card;
         }
-
-        $scope.$on("discard", function (ev, args) {
-            var card = args[0];
-            card.up = true;
-            cards.push(card);
-            $scope.$apply();
-        });
-
-        $scope.$on("pickUpTable", function (ev) {
-            var tempCards = [];
-            while (cards.length > 0) {
-                var card = cards.pop();
-                card.up = false;
-                tempCards.push(card);
-            }
-            $scope.$apply();
-            $scope.$emit("dropTable", tempCards);
-        });
     })
-    .controller('FoundationCtrl', function ($scope, $element) {
-        if (!$scope.cards) {
+    .controller('FoundationCtrl', function ($scope) {
+        if ($scope.foundations) {
+            $scope.cards = $scope.foundations[$scope.currentFoundation];
+            $scope.nextFoundation();
+        } else {
             $scope.cards = [];
         }
 
         var cards = $scope.cards;
 
         $scope.pop = function () {
-            var card = $scope.cards.pop();
-            //$scope.$apply();
+            var card = cards.pop();
             return card;
         }
 
 
         $scope.onDrop = function ($event, $data) {
-            this.cards.push($data);
+            cards.push($data);
 
         }
 
@@ -283,15 +237,15 @@ angular.module('app', ['ngDragDrop'])
             return false;
         }
     })
-    .controller('PileCtrl', function ($scope, $element, $timeout) {
-        console.log($scope.foobar);
-        if (!$scope.cards) {
+    .controller('PileCtrl', function ($scope) {
+        if ($scope.piles) {
+            $scope.cards = $scope.piles[$scope.currentPile];
+            $scope.nextPile();
+        } else {
             $scope.cards = [];
         }
 
         var cards = $scope.cards;
-
-        $scope.$emit('registerPile', [$element[0].ngId]);
 
         $scope.onDrop = function ($event, $data) {
             this.cards.push($data);
