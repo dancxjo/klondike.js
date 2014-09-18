@@ -1,3 +1,6 @@
+const RANKS = ["joker", "ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "jack", "queen", "king"];
+const SUITS = ["diamonds", "spades", "hearts", "clubs"];
+
 function Card(rank, suit, up) {
     this.rank = rank;
     this.suit = suit;
@@ -7,6 +10,46 @@ function Card(rank, suit, up) {
 Card.prototype.flip = function () {
     this.up = !this.up;
 }
+
+function Stack() {
+    this.cards = [];
+}
+
+Stack.prototype = {
+    get top() {
+        return this.cards.length == 0 ? undefined : this.cards[this.cards.length - 1];
+    },
+
+    push: function (card) {
+        this.cards.push(card);
+    },
+    
+    pop: function () {
+        return this.cards.pop();
+    },
+    
+    shuffle: function () {
+        for (var i = this.cards.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var a = this.cards[i];
+            this.cards[i] = this.cards[j];
+            this.cards[j] = a;
+        }
+    }
+}
+
+function Deck() {
+    this.cards = [];
+    for (var s in SUITS) {
+        for (var r in RANKS) {
+            if (r > 0) {
+                this.cards.push(new Card(RANKS[r], SUITS[s]));
+            }
+        }
+    }
+}
+
+Deck.prototype = new Stack();
 
 angular.module('app', ['ngDragDrop'])
     .filter('last', function () {
@@ -136,18 +179,10 @@ angular.module('app', ['ngDragDrop'])
             };
     }])
     .controller('GameCtrl', function ($scope, $timeout) {
-        $scope.deck = [];
+        $scope.deck = new Deck();
+        $scope.deck.shuffle();
 
-        var ranks = ["ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "jack", "queen", "king"];
-        var suits = ["diamonds", "spades", "hearts", "clubs"];
-
-        for (var s in suits) {
-            for (var r in ranks) {
-                $scope.deck.push(new Card(ranks[r], suits[s]));
-            }
-        }
-
-        $scope.table = [];
+        $scope.table = new Stack();
 
         $scope.currentFoundation = 0;
         $scope.nextFoundation = function () {
@@ -155,7 +190,7 @@ angular.module('app', ['ngDragDrop'])
         }
         $scope.foundations = [];
         for (var i = 0; i < 4; i++) {
-            $scope.foundations[i] = [];
+            $scope.foundations[i] = new Stack();
         }
 
         $scope.currentPile = 0;
@@ -165,7 +200,7 @@ angular.module('app', ['ngDragDrop'])
 
         $scope.piles = [];
         for (var i = 0; i < 7; i++) {
-            $scope.piles[i] = [];
+            $scope.piles[i] = new Stack();
         }
 
         for (var a = 0; a < 7; a++) {
@@ -177,12 +212,12 @@ angular.module('app', ['ngDragDrop'])
         }
 
         $scope.draw = function () {
-            if ($scope.deck.length > 0) {
+            if ($scope.deck.cards.length > 0) {
                 var card = $scope.deck.pop();
                 card.flip();
                 $scope.table.push(card);
             } else {
-                while ($scope.table.length > 0) {
+                while ($scope.table.cards.length > 0) {
                     var card = $scope.table.pop();
                     card.flip();
                     $scope.deck.push(card);
@@ -193,40 +228,34 @@ angular.module('app', ['ngDragDrop'])
     })
     .controller('DeckCtrl', function ($scope, $element) {
         if ($scope.deck) {
-            $scope.cards = $scope.deck;
+            $scope.stack = $scope.deck;
         } else {
-            $scope.cards = [];
+            $scope.stack = new Deck();
         }
 
-        var cards = $scope.cards;
-    
-        $scope.shuffle = function () {
-            
-        }
+        var cards = $scope.stack.cards;
+        $scope.cards = cards;
     })
     .controller('TableCtrl', function ($scope, $element) {
         if ($scope.table) {
-            $scope.cards = $scope.table;
+            $scope.stack = $scope.table;
         } else {
-            $scope.cards = [];
+            $scope.stack = new Stack();
         }
 
-        var cards = $scope.cards;
-
-        $scope.pop = function () {
-            var card = cards.pop();
-            return card;
-        }
+        var cards = $scope.stack.cards;
+        $scope.cards = cards;
     })
     .controller('FoundationCtrl', function ($scope) {
         if ($scope.foundations) {
-            $scope.cards = $scope.foundations[$scope.currentFoundation];
+            $scope.stack = $scope.foundations[$scope.currentFoundation];
             $scope.nextFoundation();
         } else {
-            $scope.cards = [];
+            $scope.stack = new Stack();
         }
 
-        var cards = $scope.cards;
+        var cards = $scope.stack.cards;
+        $scope.cards = cards;
 
         $scope.pop = function () {
             var card = cards.pop();
@@ -258,25 +287,26 @@ angular.module('app', ['ngDragDrop'])
     })
     .controller('PileCtrl', function ($scope) {
         if ($scope.piles) {
-            $scope.cards = $scope.piles[$scope.currentPile];
+            $scope.stack = $scope.piles[$scope.currentPile];
             $scope.nextPile();
         } else {
-            $scope.cards = [];
+            $scope.stack = new Stack();
         }
 
-        var cards = $scope.cards;
+        var cards = $scope.stack.cards;
+        $scope.cards = cards;
 
         $scope.onDrop = function ($event, $data) {
-            this.cards.push($data);
+            cards.push($data);
         }
 
         $scope.pop = function () {
-            var card = $scope.cards.pop();
+            var card = cards.pop();
             return card;
         }
         
         $scope.popFrom = function ($index) {
-            $scope.cards.splice($index, $scope.cards.length - $index);
+            cards.splice($index, cards.length - $index);
         }
 
         $scope.dropValidate = function ($data) {
