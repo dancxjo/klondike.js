@@ -39,10 +39,11 @@
     <div id="piles">
         <ul ng-repeat="pile in piles" class="pile" ng-controller="PileCtrl" ui-on-Drop="onDrop($event, $data)" drop-validate="dropValidate($data)" drag-hover-class="droppable" drag-enter-class="hint">
             <li ng-repeat="card in cards" ng-class="{down: !card.up}">
-                <card ng-if="!card.up && $last" rank="{{card.rank}}" suit="{{card.suit}}" up="{{card.up}}" ng-click="card.flip()"></card>
-                <card ng-if="!card.up && !$last" rank="{{card.rank}}" suit="{{card.suit}}" up="{{card.up}}"></card>
-                <card ng-if="card.up" rank="{{card.rank}}" suit="{{card.suit}}" up="{{card.up}}" ui-draggable="{{$last}}" drag="card" on-drop-success="pop()"></card>
+                <card ng-if="!card.up && $index == (cards | last)" rank="{{card.rank}}" suit="{{card.suit}}" up="{{card.up}}" ng-click="card.flip()"></card>
+                <card ng-if="!card.up && $index != (cards | last)" rank="{{card.rank}}" suit="{{card.suit}}" up="{{card.up}}"></card>
+                <card ng-if="card.up" rank="{{card.rank}}" suit="{{card.suit}}" up="{{card.up}}" ui-draggable="true" drag="card" on-drop-success="popFrom($index)"></card>
             </li>
+
         </ul>
     </div>
 </body>
