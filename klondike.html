@@ -1,170 +1,50 @@
 <!doctype html>
-<html>
-	<head>
-		<meta charset="UTF-8">
-		<link rel="stylesheet" type="text/css" href="cards.css" media="screen" />
-		<script src="mvc.js"></script>
-		<script src="cards.js"></script>
-		<script src="stacks.js"></script>
-	</head>
-	<body>
-		<script>
-			var dragStack = [];
-		
-			var deck = new Stack();
-			deck.generateDeck();
-			deck.shuffle();
-			
-			for (var i = 0; i < deck.children.length; i++) {
-				deck.children[i].addHandler("dragstart", function (ev, card) {
-					dragStack = [];
-					
-					if (card.stack.dragType == "series") {
-						for (var i = card.stack.children.indexOf(card); i > -1 && i < card.stack.children.length; i++) {
-							dragStack.push(card.stack.children[i]);
-							ev.dataTransfer.setData("text/plain", "a card");
-						}
-					} else {
-						var i = card.stack.children.indexOf(card);
-						if (!card.stack.topOnly || card.stack.topOnly && i == card.stack.children.length - 1) {
-							dragStack.push(card);
-							ev.dataTransfer.setData("text/plain", "a card");
-						}
-					}
-					
-				});
-			}
+<html ng-app="app">
 
-			deck.updaters.children = function (deck) {
-				for (var i = 0; i < deck.children.length; i++) {
-					deck.children[i].draggable = false;
-				}
-			}
+<head>
+    <meta charset="UTF-8">
+    <script src="lib/jquery/dist/jquery.min.js"></script>
+    <script src="lib/angular/angular.min.js"></script>
+    <script src="app.js"></script>
+    <script src="lib/draganddrop.js"></script>
+    <link rel="stylesheet" type="text/css" href="cards.css" media="screen" />
+</head>
 
-			var table = new Stack("table");
-			
-			deck.addHandler("click", function (ev, deck) {
-				if (deck.children.length > 0) {
-					var card = deck.pop();
-					card.flip();
-					table.push(card);
-				} else {
-					while (table.children.length > 0) {
-						var card = table.pop();
-						card.flip();
-						deck.push(card);
-					}
-				}
-			});
+<body ng-controller="GameCtrl">
+    <div id="top">
+        <div id="foundations">
+            <ul ng-repeat="foundation in foundations" class="foundation" ng-controller="FoundationCtrl" ui-on-Drop="onDrop($event, $data)" drop-validate="dropValidate($data)" drag-hover-class="droppable" drag-enter-class="hint">
+                <li ng-repeat="card in cards" ng-class="{down: !card.up}">
+                    <card ng-if="$last" rank="{{card.rank}}" suit="{{card.suit}}" up="{{card.up}}" ui-draggable="{{$last}}" drag="card" on-drop-success="pop()"></card>
+                    <card ng-if="!$last" rank="{{card.rank}}" suit="{{card.suit}}" up="{{card.up}}"></card>
+                </li>
+            </ul>
+        </div>
 
-			table.updaters.children = function (table) {
-				for (var i = 0; i < table.children.length; i++) {
-					table.children[i].draggable = false;
-				}
-				
-				if (table.children.length) {
-					table.children[table.children.length - 1].draggable = true;
-				}
-			}
-				
-			var foundations = [];
-			
-			for (var i = 0; i < 4; i++) {
-				foundations[i] = new Stack("foundation");
-				foundations[i].addHandler("dragover", function (ev, stack) {
-					if (dragStack.length == 1) {
-						var baseRank = 0;
-						if (stack.children.length > 0) {
-							baseRank = stack.children[stack.children.length - 1].rank;
-						}
-								
-						if (baseRank + 1 == dragStack[0].rank) {
-							if (stack.children.length == 0 || stack.children[stack.children.length - 1].suit == dragStack[0].suit) {
-								ev.preventDefault();
-								return false;
-							}
-						}
-					}
-				});
-				
-				foundations[i].addHandler("drop", function (ev, stack) {
-					var dummy = ev.dataTransfer.getData("text/plain");
-					while (dragStack.length) {
-						var card = dragStack.shift();
-						card.remove();
-						stack.push(card);
-					}
-					ev.preventDefault();
-					ev.stopPropagation();
-				});
-				
-				document.body.appendChild(foundations[i].element);
-			}
-			
-			document.body.appendChild(table.element);
-			document.body.appendChild(deck.element);
 
-			var pileElement = document.body.appendChild(document.createElement("div"));
-			pileElement.setAttribute("id", "piles");
-			
-			var piles = [];
-			
-			for (var a = 0; a < 7; a++) {
-				piles[a] = new Stack("pile");
-				pileElement.appendChild(piles[a].element);
-				
-				piles[a].addHandler("click", function (ev, pile) {
-					if (pile.children.length && !pile.children[pile.children.length - 1].up) {
-						pile.children[pile.children.length - 1].flip();
-					}
-				});
-				
-				piles[a].addHandler("dragover", function (ev, stack) {					
-					if (dragStack.length > 0) {
-						var baseRank = 14;
-						
-						if (stack.children.length > 0) {
-							baseRank = stack.children[stack.children.length - 1].rank;
-						}
-														
-						if (baseRank - 1 == dragStack[0].rank) {
-							if (stack.children.length == 0 || stack.children[stack.children.length - 1].getColor() != dragStack[0].getColor()) {
-								ev.preventDefault();
-								return false;
-							}
-						}
-					}
-				});
-				
-				piles[a].addHandler("drop", function (ev, stack) {
-					var dummy = ev.dataTransfer.getData("text/plain");
-					while (dragStack.length) {
-						var card = dragStack.shift();
-						card.remove();
-						stack.push(card);
-					}
-					ev.preventDefault();
-					ev.stopPropagation();
-				});
+        <ul class="table" ng-controller="TableCtrl">
+            <li ng-repeat="card in cards" ng-class="{down: !card.up}">
+                <card rank="{{card.rank}}" suit="{{card.suit}}" up="{{card.up}}" ui-draggable="{{$last}}" drag="card" on-drop-success="pop()"></card>
+            </li>
+        </ul>
 
-				piles[a].dragType = "series";
-				piles[a].updaters.children = function (pile) {
-					for (var i = 0; i < pile.children.length; i++) {
-						pile.children[i].draggable = pile.children[i].up;						
-					}
-				}
-			}
+        <ul class="deck" ng-controller="DeckCtrl">
+            <li ng-repeat="card in cards" ng-class="{down: !card.up}">
+                <card rank="{{card.rank}}" suit="{{card.suit}}" up="{{card.up}}"></card>
+            </li>
+        </ul>
 
-			for (var a = 0; a < 7; a++) {
-				for (var b = a; b < 7; b++) {
-					var card = deck.pop();
-					if (a == b) {
-						card.flip();
-					}
-					piles[b].push(card);					
-				}
-			}
-			
-		</script>
-	</body>
+    </div>
+
+    <div id="piles">
+        <ul ng-repeat="pile in piles" class="pile" ng-controller="PileCtrl" ui-on-Drop="onDrop($event, $data)" drop-validate="dropValidate($data)" drag-hover-class="droppable" drag-enter-class="hint">
+            <li ng-repeat="card in cards" ng-class="{down: !card.up}">
+                <card ng-if="!card.up" ng-if="$last" rank="{{card.rank}}" suit="{{card.suit}}" up="{{card.up}}" ng-click="card.up = true"></card>
+                <card ng-if="!card.up" ng-if="!$last" rank="{{card.rank}}" suit="{{card.suit}}" up="{{card.up}}"></card>
+                <card ng-if="card.up" rank="{{card.rank}}" suit="{{card.suit}}" up="{{card.up}}" ui-draggable="{{$last}}" drag="card" on-drop-success="pop()"></card>
+            </li>
+        </ul>
+    </div>
+</body>
+
 </html>

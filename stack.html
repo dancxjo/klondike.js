@@ -1,0 +1,21 @@
+<ul class="{{type}}">
+    <li ng-repeat="card in cards">
+        <div class="card" ng-class="{up: card.up}">
+            <div class="front {{card.suit}}" ng-if="card.up">
+                <div class="index">
+                    <div class="rank">{{card.rank | rankLetter}}</div>
+                    <div class="suit">{{card.suit | suitSymbol}}</div>
+                </div>
+
+                <div class="index reverse">
+                    <div class="rank">{{card.rank | rankLetter}}</div>
+                    <div class="suit">{{card.suit | suitSymbol}}</div>
+                </div>
+
+                <img ng-if="card.rank | isFace" class="face" ng-attr-src="{{card.rank}}.gif"/>
+
+                <div ng-repeat="dot in card.rank | dots" class="{{dot}}">{{card.suit | suitSymbol}}</div>
+            </div>
+        </div>
+    </li>
+</ul>

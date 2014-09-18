@@ -1,0 +1,17 @@
+<div class="card" ng-class="{up: up}">
+    <div class="front {{suit}}" ng-if="up">
+        <div class="index">
+            <div class="rank">{{rank | rankLetter}}</div>
+            <div class="suit">{{suit | suitSymbol}}</div>
+        </div>
+
+        <div class="index reverse">
+            <div class="rank">{{rank | rankLetter}}</div>
+            <div class="suit">{{suit | suitSymbol}}</div>
+        </div>
+
+        <img ng-if="rank | isFace" class="face" ng-attr-src="images/{{rank}}.gif"/>
+
+        <div ng-repeat="dot in rank | dots" class="{{dot}}">{{suit | suitSymbol}}</div>
+    </div>
+</div>
