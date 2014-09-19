@@ -1,16 +1,17 @@
 <!doctype html>
-<html ng-app="app">
+<html ng-app="klondike">
 
 <head>
     <meta charset="UTF-8">
     <script src="lib/jquery/dist/jquery.min.js"></script>
     <script src="lib/angular/angular.min.js"></script>
-    <script src="app.js"></script>
+    <script src="cards.js"></script>
+    <script src="klondike.js"></script>
     <script src="lib/draganddrop.js"></script>
     <link rel="stylesheet" type="text/css" href="cards.css" media="screen" />
 </head>
 
-<body ng-controller="GameCtrl">
+<body ng-controller="KlondikeGameCtrl">
     <div id="top">
         <div id="foundations">
             <ul ng-repeat="foundation in foundations" class="foundation" ng-controller="FoundationCtrl" ui-on-Drop="onDrop($event, $data)" drop-validate="dropValidate($data)" drag-hover-class="droppable" drag-enter-class="hint">

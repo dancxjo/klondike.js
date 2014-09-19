@@ -1,0 +1,29 @@
+<!doctype html>
+<html ng-app="crazy8">
+
+<head>
+    <meta charset="UTF-8">
+    <script src="lib/jquery/dist/jquery.min.js"></script>
+    <script src="lib/angular/angular.min.js"></script>
+    <script src="cards.js"></script>
+    <script src="crazy8.js"></script>
+    <script src="lib/draganddrop.js"></script>
+    <link rel="stylesheet" type="text/css" href="cards.css" media="screen" />
+</head>
+
+<body ng-controller="Crazy8GameCtrl">
+    <div id="player1">
+        <hand ng-model="computerHand"></hand>
+    </div>
+    
+    <div id="board">
+        <table ng-model="table"></table>
+        <deck ng-model="deck"></table>
+    </div>
+    
+    <div id="player2">
+        <hand ng-model="humanHand"></hand>
+    </div>
+</body>
+
+</html>
