@@ -28,7 +28,7 @@
   </div>
   <div id="tableau">
     <ul class="pile fanned down" ng-repeat="pile in tableau">
-      <li card="card" ng-repeat="card in pile"></li>
+      <li card="card" ng-class="{down: !card.up}" ng-repeat="card in pile"></li>
     </ul>
   </div>
 </div>
