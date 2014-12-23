@@ -2,7 +2,15 @@
 Some CSS and images from http://www.brainjar.com/css/cards/default.asp
 This should be cleaned up a lot
 */
-.table {
+.info {
+  margin-bottom: 1em;
+}
+
+.footer {
+  clear: both;
+}
+
+.felt {
   background: #277714;
 }
 
@@ -150,7 +158,7 @@ ul.squared li:last-child { visibility: visible; }
 }
 
 #waste {
-  width: 6em;
+  width: 8.75em;
 }
 
 #tableau {
