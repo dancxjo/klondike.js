@@ -10,7 +10,6 @@ angular.module('klondikejsApp')
   .directive('card', function () {
     return {
       templateUrl: 'views/card.html',
-      //template: '<div>{{card}}</div>',
       restrict: 'A',
       scope: {
         card: '='

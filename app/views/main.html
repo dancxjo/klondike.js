@@ -1,5 +1,5 @@
 <div class="table" ng-controller="GameCtrl">
-  <div class="info container form-inline">
+  <div class="info container-fluid form-inline">
     <div class="form-group">
       <label for="score">Score</label>
       <input type="number" class="form-control" id="score" ng-model="score" disabled>
@@ -26,7 +26,7 @@
       <li card="card" ng-repeat="card in stock"></li>
     </ul>
   </div>
-  <div class="tableau">
+  <div id="tableau">
     <ul class="pile fanned down" ng-repeat="pile in tableau">
       <li card="card" ng-repeat="card in pile"></li>
     </ul>

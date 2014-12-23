@@ -1,0 +1,171 @@
+/*
+Some CSS and images from http://www.brainjar.com/css/cards/default.asp
+This should be cleaned up a lot
+*/
+.table {
+  background: #277714;
+}
+
+.card {
+  font: 12pt serif;
+  background-image: url("/images/cardback.gif");
+  border: 4px solid white;
+  color: #000000;
+  font-size: 20pt;
+  position: absolute;
+  width:  4em;
+  height: 5.00em;
+  box-shadow: 0 0 1px 1px #000;
+  border-radius: 6px;
+  /* cursor: pointer; */
+  transition: all 1s
+}
+
+.spades, .clubs {
+  color: black;
+}
+
+.hearts, .diamonds {
+  color: red;
+}
+
+.card>.front {
+  background-color: #ffffff;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  visibility: hidden;
+}
+
+.up>.front {
+  visibility: visible;
+}
+
+.spotA1 { position: absolute; left: 0.60em; top: 0.5em; }
+.spotA2 { position: absolute; left: 0.60em; top: 1.5em; }
+.spotA3 { position: absolute; left: 0.60em; top: 2.0em; }
+.spotA4 { position: absolute; left: 0.60em; top: 2.5em; }
+.spotA5 { position: absolute; left: 0.60em; top: 3.5em; }
+.spotB1 { position: absolute; left: 1.55em; top: 0.5em; }
+.spotB2 { position: absolute; left: 1.55em; top: 1.0em; }
+.spotB3 { position: absolute; left: 1.55em; top: 2.0em; }
+.spotB4 { position: absolute; left: 1.55em; top: 3.0em; }
+.spotB5 { position: absolute; left: 1.55em; top: 3.5em; }
+.spotC1 { position: absolute; left: 2.50em; top: 0.5em; }
+.spotC2 { position: absolute; left: 2.50em; top: 1.5em; }
+.spotC3 { position: absolute; left: 2.50em; top: 2.0em; }
+.spotC4 { position: absolute; left: 2.50em; top: 2.5em; }
+.spotC5 { position: absolute; left: 2.50em; top: 3.5em; }
+
+.spotA4, .spotA5, .spotB4, .spotB5, .spotC4, .spotC5 {
+  transform: rotate(180deg);
+}
+
+.ace {
+  font-size: 300%;
+  position: absolute;
+  left: 0.325em;
+  top:  0.250em;
+}
+
+.index {
+  font-size: 50%;
+  font-weight: bold;
+  text-align: center;
+  position: absolute;
+  line-height: 86%;
+}
+
+.index !.reverse {
+  left: 0.25em;
+  top:  0.25em;
+}
+
+.reverse {
+  right: 0.25em;
+  bottom:  0.25em;
+  transform: rotate(180deg);
+}
+
+.face {
+  border: 1px solid #000000;
+  position: absolute;
+  left: 0.50em;
+  top:  0.45em;
+  width:  2.6em;
+  height: 4.0em;
+  user-drag: none;
+  -moz-user-select: none; -webkit-user-drag: none;
+  -moz-user-drag: none;
+}
+
+.squared, .pile, .hand, .fanned, .foundation {
+  list-style: none;
+  padding: 4px;
+  position: relative;
+}
+
+.pile {
+  float: left;
+  font-size: 20pt;
+  width:  3.75em;
+}
+
+.squared li, .pile li, .hand li, .fanned li, .foundation li {
+  position: relative;
+}
+
+ul.squared li { visibility: hidden; left: 8px;  bottom: 4px; }
+ul.squared li:nth-child(1)  { visibility: visible; left: 0;    bottom: 0; }
+ul.squared li:nth-child(2)  { visibility: visible; left: 2px;  bottom: 1px; }
+ul.squared li:nth-child(3)  { visibility: visible; left: 4px;  bottom: 2px; }
+ul.squared li:nth-child(4)  { visibility: visible; left: 6px;  bottom: 3px; }
+ul.squared li:nth-child(5)  { visibility: visible; left: 8px;  bottom: 4px; }
+ul.squared li:last-child { visibility: visible; }
+
+.pile ul {
+  list-style: none;
+  padding-left: 0;
+  padding-top: 1em;
+}
+
+.pile li {
+  height: 1em;
+
+}
+
+.pile li.down {
+  height: 4px;
+}
+
+.foundation, .squared, .fanned, .pile {
+  font-size: 20pt;
+  width:  3.75em;
+  height: 5.00em;
+  border: 1px dotted #cfcfcf;
+  border-radius: 6px;
+  float: left;
+  margin-right: 1em;
+  padding: 0;
+}
+
+#waste {
+  width: 6em;
+}
+
+#tableau {
+  clear: both;
+}
+
+ul.fanned .right li:nth-last-child(3n)  { left: 0;  bottom: 0px; transition: all 1s}
+ul.fanned .right li:nth-last-child(3n+2) { left: 1em; bottom: 0px;  transition: all 1s}
+ul.fanned .right li:nth-last-child(3n+1)  { left: 2em;  bottom: 0px;    transition: all 1s}
+
+.hint {
+  box-shadow: 0 0 16px 8px #166603;
+}
+
+.droppable {
+  background: #166603;
+  box-shadow: 0 0 32px 16px #499939;
+}
