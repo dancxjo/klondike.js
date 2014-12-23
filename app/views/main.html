@@ -1,23 +1,35 @@
-<div class="jumbotron">
-  <h1>'Allo, 'Allo!</h1>
-  <p class="lead">
-    <img src="images/yeoman.png" alt="I'm Yeoman"><br>
-    Always a pleasure scaffolding your apps.
-  </p>
-  <p><a class="btn btn-lg btn-success" ng-href="#">Splendid!<span class="glyphicon glyphicon-ok"></span></a></p>
+<div class="table" ng-controller="GameCtrl as game">
+  <div class="info container form-inline">
+    <div class="form-group">
+      <label for="score">Score</label>
+      <input type="number" class="form-control" id="score" ng-model="game.score" disabled>
+    </div>
+    <div class="form-group">
+      <label for="moves">Moves</label>
+      <input type="number" class="form-control" id="moves" ng-model="game.moves" disabled>
+    </div>
+    <div class="form-group">
+      <label for="time">Time</label>
+      <input type="input" class="form-control" id="time" ng-model="game.time" disabled>
+    </div>
+  </div>
+  <div class="top">
+    <div id="foundations">
+      <ul class="foundation squared" foundation by-suit ng-repeat="foundation in game.foundations">
+        <li class="card" ng-repeat="card in foundation"></li>
+      </ul>
+    </div>
+    <ul id="waste" class="fanned right">
+      <li class="card" ng-repeat="card in game.waste"></li>
+    </ul>
+    <ul id="stock" class="squared">
+      <li class="card" ng-repeat="card in game.stock"></li>
+    </ul>
+  </div>
+  <div class="tableau">
+    <ul class="pile fanned down" ng-repeat="pile in game.tableau">
+      <li class="card" ng-repeat="card in pile"></li>
+    </ul>
+  </div>
 </div>
 
-<div class="row marketing">
-  <h4>HTML5 Boilerplate</h4>
-  <p>
-    HTML5 Boilerplate is a professional front-end template for building fast, robust, and adaptable web apps or sites.
-  </p>
-
-  <h4>Angular</h4>
-  <p>
-    AngularJS is a toolset for building the framework most suited to your application development.
-  </p>
-
-  <h4>Karma</h4>
-  <p>Spectacular Test Runner for JavaScript.</p>
-</div>
