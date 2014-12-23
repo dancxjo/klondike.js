@@ -16,20 +16,19 @@
   <div class="top">
     <div id="foundations">
       <ul class="foundation squared" foundation by-suit ng-repeat="foundation in game.foundations">
-        <li class="card" ng-repeat="card in foundation"></li>
+        <li class="card" up="{{card.up}}" rank="{{card.rank}}" suit="{{card.suit}}" ng-repeat="card in foundation"></li>
       </ul>
     </div>
     <ul id="waste" class="fanned right">
-      <li class="card" ng-repeat="card in game.waste"></li>
+      <li class="card" up="{{card.up}}" rank="{{card.rank}}" suit="{{card.suit}}" ng-repeat="card in game.waste"></li>
     </ul>
     <ul id="stock" class="squared">
-      <li class="card" ng-repeat="card in game.stock"></li>
+      <li class="card" up="{{card.up}}" rank="{{card.rank}}" suit="{{card.suit}}" ng-repeat="card in game.stock"></li>
     </ul>
   </div>
   <div class="tableau">
     <ul class="pile fanned down" ng-repeat="pile in game.tableau">
-      <li class="card" ng-repeat="card in pile"></li>
+      <li class="card" up="{{card.up}}" rank="{{card.rank}}" suit="{{card.suit}}" ng-repeat="card in pile"></li>
     </ul>
   </div>
 </div>
-
