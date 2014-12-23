@@ -8,39 +8,39 @@
  * Controller of the klondikejsApp
  */
 angular.module('klondikejsApp')
-  .controller('GameCtrl', function () {
-    this.score = 0;
-    this.moves = 32;
-    this.start = new Date();
-    this.time = 0;
+  .controller('GameCtrl', function ($scope) {
+    $scope.score = 0;
+    $scope.moves = 32;
+    $scope.start = new Date();
+    $scope.time = 0;
 
-    this.foundations = [[],[],[],[]];
-    this.waste = [];
-    this.stock = [];
+    $scope.foundations = [[],[],[],[]];
+    $scope.waste = [];
+    $scope.stock = [];
 
-    this.tableau = [[],[],[],[],[],[],[]];
+    $scope.tableau = [[],[],[],[],[],[],[]];
 
     // Set up the deck
-    for (var suit in ['spades', 'hearts', 'diams', 'clubs']) {
+    for (var suit = 0; suit < 4; suit++) {
         for (var rank = 1; rank <= 13; rank++) {
-            this.stock.push({rank:rank,suit:suit,up:false});
+            $scope.stock.push({rank:rank,suit:suit,up:false});
         }
     }
 
     //  the deck
-    for (var i = this.stock.length - 1; i > 0; i--) {
+    for (var i = $scope.stock.length - 1; i > 0; i--) {
         var j = Math.floor(Math.random() * (i + 1));
-        var a = this.stock[i];
-        this.stock[i] = this.stock[j];
-        this.stock[j] = a;
+        var card = $scope.stock[i];
+        $scope.stock[i] = $scope.stock[j];
+        $scope.stock[j] = card;
     }
 
     // Layout the tableau
-    for (var a = 0; a < this.tableau.length; a++) {
-      for (var b = a; b < this.tableau.length; b++) {
-        var card = this.stock.pop();
-        this.tableau[b].push(card);
-        if (a===b) card.up = true;
+    for (var a = 0; a < $scope.tableau.length; a++) {
+      for (var b = a; b < $scope.tableau.length; b++) {
+        var card = $scope.stock.pop();
+        $scope.tableau[b].push(card);
+        if (a===b) {card.up = true;}
       }
     }
 

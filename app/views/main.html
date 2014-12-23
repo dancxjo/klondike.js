@@ -1,34 +1,34 @@
-<div class="table" ng-controller="GameCtrl as game">
+<div class="table" ng-controller="GameCtrl">
   <div class="info container form-inline">
     <div class="form-group">
       <label for="score">Score</label>
-      <input type="number" class="form-control" id="score" ng-model="game.score" disabled>
+      <input type="number" class="form-control" id="score" ng-model="score" disabled>
     </div>
     <div class="form-group">
       <label for="moves">Moves</label>
-      <input type="number" class="form-control" id="moves" ng-model="game.moves" disabled>
+      <input type="number" class="form-control" id="moves" ng-model="moves" disabled>
     </div>
     <div class="form-group">
       <label for="time">Time</label>
-      <input type="input" class="form-control" id="time" ng-model="game.time" disabled>
+      <input type="input" class="form-control" id="time" ng-model="time" disabled>
     </div>
   </div>
   <div class="top">
     <div id="foundations">
-      <ul class="foundation squared" foundation by-suit ng-repeat="foundation in game.foundations">
-        <li class="card" up="{{card.up}}" rank="{{card.rank}}" suit="{{card.suit}}" ng-repeat="card in foundation"></li>
+      <ul class="foundation squared" foundation by-suit ng-repeat="foundation in foundations">
+        <li card="card" ng-repeat="card in foundation"></li>
       </ul>
     </div>
     <ul id="waste" class="fanned right">
-      <li class="card" up="{{card.up}}" rank="{{card.rank}}" suit="{{card.suit}}" ng-repeat="card in game.waste"></li>
+      <li card="card" ng-repeat="card in waste"></li>
     </ul>
     <ul id="stock" class="squared">
-      <li class="card" up="{{card.up}}" rank="{{card.rank}}" suit="{{card.suit}}" ng-repeat="card in game.stock"></li>
+      <li card="card" ng-repeat="card in stock"></li>
     </ul>
   </div>
   <div class="tableau">
-    <ul class="pile fanned down" ng-repeat="pile in game.tableau">
-      <li class="card" up="{{card.up}}" rank="{{card.rank}}" suit="{{card.suit}}" ng-repeat="card in pile"></li>
+    <ul class="pile fanned down" ng-repeat="pile in tableau">
+      <li card="card" ng-repeat="card in pile"></li>
     </ul>
   </div>
 </div>

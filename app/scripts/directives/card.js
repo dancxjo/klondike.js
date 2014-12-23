@@ -10,11 +10,10 @@ angular.module('klondikejsApp')
   .directive('card', function () {
     return {
       templateUrl: 'views/card.html',
-      restrict: 'EAC',
+      //template: '<div>{{card}}</div>',
+      restrict: 'A',
       scope: {
-        face: '@',
-        rank: '@',
-        suit: '@'
+        card: '='
       }
     };
   });
