@@ -157,10 +157,6 @@ ul.squared li:last-child { visibility: visible; }
   padding: 0;
 }
 
-#waste {
-  width: 8.75em;
-}
-
 #tableau {
   clear: both;
 }
