@@ -25,8 +25,11 @@ This should be cleaned up a lot
   height: 5.00em;
   box-shadow: 0 0 1px 1px #000;
   border-radius: 6px;
-  /* cursor: pointer; */
+  cursor: pointer;
   transition: all 1s
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
 }
 
 .spades, .clubs {
@@ -172,4 +175,15 @@ ul.fanned .right li:nth-last-child(3n+1)  { left: 2em;  bottom: 0px;    transiti
 .droppable {
   background: #166603;
   box-shadow: 0 0 32px 16px #499939;
+}
+
+.drag {
+  opacity: 1;
+}
+
+.card.ng-move,
+.card.ng-enter,
+.card.ng-leave {
+  -webkit-transition:all linear 0.5s;
+  transition:all linear 0.5s;
 }
