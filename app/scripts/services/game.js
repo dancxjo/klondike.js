@@ -8,7 +8,7 @@
  * Factory in the klondikejsApp.
  */
 angular.module('klondikejsApp')
-  .factory('game', function ($interval) {  
+  .factory('game', function ($interval) {
     var game = {
       score: 0,
       moves: 0,
@@ -76,6 +76,7 @@ angular.module('klondikejsApp')
               this.hand[i].up = false;
             }
             this.drop(this.stock);
+            this.stock.reverse();
             this.draw();
           }
         }
