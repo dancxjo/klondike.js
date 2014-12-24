@@ -105,7 +105,7 @@ angular.module('klondikejsApp')
               //this.appendChild(item);
 
               game.drop(scope.receptacle);
-              //scope.$apply();
+              scope.$apply();
               return false;
             }
           },

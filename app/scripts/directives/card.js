@@ -25,8 +25,8 @@ angular.module('klondikejsApp')
           console.log(scope.container, scope.index);
           console.dir(scope);
           game.grab(scope.container.length - scope.index, scope.container);
-          //scope.$apply();
           this.classList.add('drag');
+          //scope.$apply(); // This abruptly ends the drag...urgh
           return false;
 
         }
@@ -34,7 +34,7 @@ angular.module('klondikejsApp')
         function dragEnd(e) {
           if (game.hand.length > 0) {
             game.replace();
-            //scope.$apply();
+            scope.$apply();
           }
           this.classList.remove('drag');
           return false;

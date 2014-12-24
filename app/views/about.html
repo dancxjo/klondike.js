@@ -1,1 +1,19 @@
-<p>This is the about view.</p>
+<p>This is an implementation of <a href="http://en.wikipedia.org/wiki/Klondike_%28solitaire%29">Klondike</a>
+using <a href="http://www.angularjs.org">AngularJS</a>.</p>
+<p>The design is like this:</p>
+<dl>
+  <dt>Game Service</dt>
+  <dd>Stores the model for the game.</dd>
+
+  <dt>Game Controller</dt>
+  <dd>Attach to the Game Service. Shuffles the deck. Attaches to the main view. Lays out the tableau.</dd>
+
+  <dt>Card Directive</dt>
+  <dd>Handles drawing a card. Handles dragging talking to Game Service.</dd>
+
+  <dt>Receptacle Directive</dt>
+  <dd>Handles receiving a drop talking to the Game Service.</dd>
+
+  <dt>Various Filters</dt>
+  <dd>Various filters related to drawing a card.</dd>
+</dl>
