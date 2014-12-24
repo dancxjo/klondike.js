@@ -50,6 +50,8 @@ angular.module('klondikejsApp')
           if (can && scope.receptacle.length > 0) {
             if (game.hand && game.hand[game.hand.length-1].rank === scope.receptacle[scope.receptacle.length - 1].rank - 1) {
               can = true;
+            } else {
+              can = false;
             }
           }
 
