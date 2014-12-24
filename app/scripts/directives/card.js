@@ -21,7 +21,7 @@ angular.module('klondikejsApp')
 
         function dragStart(e) {
           e.dataTransfer.effectAllowed = 'move';
-          e.dataTransfer.setData('Text', scope.card);
+          e.dataTransfer.setData('Text', '');
           console.log(scope.container, scope.index);
           console.dir(scope);
           game.grab(scope.container.length - scope.index, scope.container);

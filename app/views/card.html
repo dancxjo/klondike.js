@@ -3,14 +3,14 @@
     <div class="index">
       <div class="rank">{{card.rank | rankLetter}}</div>
       <div class="suit">{{card.suit | suitSymbol}}</div>
-    </div> 
+    </div>
 
     <div class="index reverse">
       <div class="rank">{{card.rank | rankLetter}}</div>
       <div class="suit">{{card.suit | suitSymbol}}</div>
     </div>
 
-    <img ng-if="card.rank | isFace" class="face" ng-attr-src="images/{{card.rank | rankName}}.gif"/>
+    <img ng-if="card.rank | isFace" draggable="false" class="face" ng-attr-src="images/{{card.rank | rankName}}.gif"/>
 
     <div ng-repeat="dot in card.rank | dots" class="{{dot}}">{{card.suit | suitSymbol}}</div>
   </div>
