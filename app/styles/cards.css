@@ -2,6 +2,12 @@
 Some CSS and images from http://www.brainjar.com/css/cards/default.asp
 This should be cleaned up a lot
 */
+body {
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
 .info {
   margin-bottom: 1em;
 }

@@ -13,7 +13,7 @@ angular.module('klondikejsApp')
       scope: {
         receptacle: '=',
         firstRank: '@',
-        bySuit: '@'
+        nextBy: '@'
       },
       link: function postLink(scope, element, attrs) {
         var el = element[0];
@@ -24,14 +24,31 @@ angular.module('klondikejsApp')
           console.log('Testing if can receive');
 
           if (scope.receptacle.length == 0 && scope.firstRank) {
-            console.log('Nothing in receptacle and has firstRank')
-            if (game.hand && game.hand[0].rank == scope.firstRank) {
+            console.log('Nothing in receptacle and has firstRank');
+            console.log(game.hand);
+            if (game.hand && game.hand[game.hand.length-1].rank == scope.firstRank) {
               can = true;
             }
           }
 
-          if (scope.bySuit && scope.receptacle && scope.receptacle.length > 0) {
-            if (game.hand && game.hand[0].suit === scope.receptacle[scope.receptacle.length - 1].suit) {
+          if (scope.nextBy === 'suit' && scope.receptacle && scope.receptacle.length > 0) {
+            if (game.hand && game.hand[game.hand.length-1].suit === scope.receptacle[scope.receptacle.length - 1].suit) {
+              can = true;
+            }
+          }
+          console.log(scope);
+          if (scope.nextBy === 'alternating-colors' && scope.receptacle.length > 0) {
+            console.log('AlternatingColors');
+            if (game.hand) {
+              var colors = ['black', 'red', 'red', 'black'];
+              if (colors[game.hand[game.hand.length-1].suit] !== colors[scope.receptacle[scope.receptacle.length - 1].suit]) {
+                can = true;
+              }
+            }
+          }
+
+          if (can && scope.receptacle.length > 0) {
+            if (game.hand && game.hand[game.hand.length-1].rank === scope.receptacle[scope.receptacle.length - 1].rank - 1) {
               can = true;
             }
           }
@@ -88,7 +105,7 @@ angular.module('klondikejsApp')
               //this.appendChild(item);
 
               game.drop(scope.receptacle);
-
+              //scope.$apply();
               return false;
             }
           },

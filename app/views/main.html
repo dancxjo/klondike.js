@@ -15,7 +15,7 @@
   </div>
   <div class="top">
     <div id="foundations">
-      <ul class="foundation squared" receptacle="foundation" first-rank="1" by-suit ng-repeat="foundation in game.foundations">
+      <ul class="foundation squared" receptacle="foundation" first-rank="1" next-by="suit" ng-repeat="foundation in game.foundations">
         <li card="card" container="foundation" index="$index" ng-repeat="card in foundation"></li>
       </ul>
     </div>
@@ -27,7 +27,7 @@
     </ul>
   </div>
   <div id="tableau">
-    <ul class="pile fanned down" receptacle="pile" ng-repeat="pile in game.tableau">
+    <ul class="pile fanned down" receptacle="pile" first-rank="13" next-by="alternating-colors" ng-repeat="pile in game.tableau" ng-click="flipPile(pile)">
       <li card="card" container="pile" index="$index" ng-class="{down: !card.up}" ng-repeat="card in pile"></li>
     </ul>
   </div>

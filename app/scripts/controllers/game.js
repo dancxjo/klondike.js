@@ -56,4 +56,10 @@ angular.module('klondikejsApp')
 
     game.time = hours + ':' + minutes + ':' + seconds;
   }, 1000);
+
+  $scope.flipPile = function flipPile(pile) {
+    if (pile.length > 0 && !pile[pile.length - 1].up) {
+      pile[pile.length - 1].up = true;
+    }
+  }
 });
