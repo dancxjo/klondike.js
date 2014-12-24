@@ -183,13 +183,12 @@ ul.fanned .right li:nth-last-child(3n+1)  { left: 2em;  bottom: 0px;    transiti
   box-shadow: 0 0 32px 16px #499939;
 }
 
-.drag {
-  opacity: 1;
-}
-
-.card.ng-move,
-.card.ng-enter,
-.card.ng-leave {
-  -webkit-transition:all linear 0.5s;
-  transition:all linear 0.5s;
-}
+.dragging > .card > .front {
+  background: rgba(237,237,237,1);
+  background: -moz-radial-gradient(center, ellipse cover, rgba(237,237,237,1) 0%, rgba(246,246,246,1) 53%, rgba(255,255,255,1) 100%);
+  background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%, rgba(237,237,237,1)), color-stop(53%, rgba(246,246,246,1)), color-stop(100%, rgba(255,255,255,1)));
+  background: -webkit-radial-gradient(center, ellipse cover, rgba(237,237,237,1) 0%, rgba(246,246,246,1) 53%, rgba(255,255,255,1) 100%);
+  background: -o-radial-gradient(center, ellipse cover, rgba(237,237,237,1) 0%, rgba(246,246,246,1) 53%, rgba(255,255,255,1) 100%);
+  background: -ms-radial-gradient(center, ellipse cover, rgba(237,237,237,1) 0%, rgba(246,246,246,1) 53%, rgba(255,255,255,1) 100%);
+  background: radial-gradient(ellipse at center, rgba(237,237,237,1) 0%, rgba(246,246,246,1) 53%, rgba(255,255,255,1) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ededed', endColorstr='#ffffff', GradientType=1 );}

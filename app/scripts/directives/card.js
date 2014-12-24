@@ -22,11 +22,12 @@ angular.module('klondikejsApp')
         function dragStart(e) {
           e.dataTransfer.effectAllowed = 'move';
           e.dataTransfer.setData('Text', '');
-          console.log(scope.container, scope.index);
-          console.dir(scope);
+          //var img = document.createElement("img");
+          //img.src = "http://kryogenix.org/images/hackergotchi-simpler.png";
+          //e.dataTransfer.setDragImage(img, 0, 0);
           game.grab(scope.container.length - scope.index, scope.container);
-          this.classList.add('drag');
-          //scope.$apply(); // This abruptly ends the drag...urgh
+          this.classList.add('dragging');
+          scope.$apply(); // This abruptly ends the drag...urgh
           return false;
 
         }
@@ -36,7 +37,7 @@ angular.module('klondikejsApp')
             game.replace();
             scope.$apply();
           }
-          this.classList.remove('drag');
+          this.classList.remove('dragging');
           return false;
         }
 

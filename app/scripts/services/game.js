@@ -25,7 +25,7 @@ angular.module('klondikejsApp')
         this.source = source;
         this.hand = [];
         for (var i = 0; i < number; i++) {
-          var card = source.pop();
+          var card = this.source[this.source.length - i - 1];//source.pop();
           this.hand.push(card);
         }
       },
@@ -54,6 +54,7 @@ angular.module('klondikejsApp')
         }
 
         while (this.hand && this.hand.length > 0) {
+          this.source.pop();
           var card = this.hand.pop();
           destination.push(card);
           this.moves++;
