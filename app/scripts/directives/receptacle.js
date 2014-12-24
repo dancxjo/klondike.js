@@ -13,15 +13,14 @@ angular.module('klondikejsApp')
       scope: {
         receptacle: '=',
         firstRank: '@',
-        nextBy: '@'
+        nextBy: '@',
+        direction: '@'
       },
       link: function postLink(scope, element, attrs) {
         var el = element[0];
 
         function canReceive() {
           var can = false;
-
-          console.log('Testing if can receive');
 
           if (scope.receptacle.length == 0 && scope.firstRank) {
             console.log('Nothing in receptacle and has firstRank');
@@ -38,7 +37,6 @@ angular.module('klondikejsApp')
           }
           console.log(scope);
           if (scope.nextBy === 'alternating-colors' && scope.receptacle.length > 0) {
-            console.log('AlternatingColors');
             if (game.hand) {
               var colors = ['black', 'red', 'red', 'black'];
               if (colors[game.hand[game.hand.length-1].suit] !== colors[scope.receptacle[scope.receptacle.length - 1].suit]) {
@@ -48,7 +46,11 @@ angular.module('klondikejsApp')
           }
 
           if (can && scope.receptacle.length > 0) {
-            if (game.hand && game.hand[game.hand.length-1].rank === scope.receptacle[scope.receptacle.length - 1].rank - 1) {
+            var inc = 1;
+            if (scope.direction === 'desc') {
+              inc *= -1;
+            }
+            if (game.hand && game.hand[game.hand.length-1].rank === scope.receptacle[scope.receptacle.length - 1].rank + inc) {
               can = true;
             } else {
               can = false;

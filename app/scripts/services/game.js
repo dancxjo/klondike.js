@@ -54,10 +54,12 @@ angular.module('klondikejsApp')
         }
 
         while (this.hand && this.hand.length > 0) {
-          this.source.pop();
           var card = this.hand.pop();
-          destination.push(card);
-          this.moves++;
+          if (destination !== this.source) {
+            this.source.pop();            
+            destination.push(card);
+            this.moves++;
+          }
         }
       },
 

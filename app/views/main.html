@@ -27,7 +27,7 @@
     </ul>
   </div>
   <div id="tableau">
-    <ul class="pile fanned down" receptacle="pile" first-rank="13" next-by="alternating-colors" ng-repeat="pile in game.tableau" ng-click="flipPile(pile)">
+    <ul class="pile fanned down" receptacle="pile" first-rank="13" next-by="alternating-colors" direction="desc" ng-repeat="pile in game.tableau" ng-click="flipPile(pile)">
       <li card="card" container="pile" index="$index" ng-class="{down: !card.up}" ng-repeat="card in pile"></li>
     </ul>
   </div>
